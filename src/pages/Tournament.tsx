@@ -124,19 +124,19 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
   const board = game.board();
 
   return (
-    <div className="bg-white rounded-lg p-6 border border-gray-200">
+    <div className="glass-strong rounded-3xl p-6 shadow-2xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/20 border border-red-500/30 rounded-lg">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse-soft" />
-            <span className="text-sm font-bold text-red-600">LIVE</span>
+            <span className="text-sm font-bold text-red-400">LIVE</span>
           </div>
-          <span className="text-base text-gray-700 font-medium">Tournament Match • Round {match.round}</span>
+          <span className="text-base text-gray-300 font-medium">Tournament Match • Round {match.round}</span>
         </div>
-        <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg">
-          <Icon path={iconPaths.eye} size={16} className="text-gray-600" />
-          <span className="text-sm text-gray-700">{Math.floor(Math.random() * 30) + 10} watching</span>
+        <div className="flex items-center gap-2 glass px-3 py-1.5 rounded-lg">
+          <Icon path={iconPaths.eye} size={16} className="text-gray-400" />
+          <span className="text-sm text-gray-300">{Math.floor(Math.random() * 30) + 10} watching</span>
         </div>
       </div>
 
@@ -146,15 +146,15 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
           {/* White Player */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
                 <ChessPieces.King color="dark" size={24} />
               </div>
               <div>
-                <div className="font-semibold text-black text-base">{match.bot1?.name}</div>
-                <div className="text-sm text-gray-600">White • {match.bot1?.difficulty}</div>
+                <div className="font-semibold text-white text-base">{match.bot1?.name}</div>
+                <div className="text-sm text-gray-400">White • {match.bot1?.difficulty}</div>
               </div>
             </div>
-            <div className={`font-mono text-2xl font-bold ${game.turn() === "w" && !isComplete ? "text-black" : "text-gray-400"}`}>
+            <div className={`font-mono text-2xl font-bold ${game.turn() === "w" && !isComplete ? "text-yellow-400" : "text-gray-500"}`}>
               {Math.floor(whiteTime / 60)}:{(whiteTime % 60).toString().padStart(2, "0")}
             </div>
           </div>
@@ -197,15 +197,15 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
           {/* Black Player */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
                 <ChessPieces.King color="light" size={24} />
               </div>
               <div>
-                <div className="font-semibold text-black text-base">{match.bot2?.name}</div>
-                <div className="text-sm text-gray-600">Black • {match.bot2?.difficulty}</div>
+                <div className="font-semibold text-white text-base">{match.bot2?.name}</div>
+                <div className="text-sm text-gray-400">Black • {match.bot2?.difficulty}</div>
               </div>
             </div>
-            <div className={`font-mono text-2xl font-bold ${game.turn() === "b" && !isComplete ? "text-black" : "text-gray-400"}`}>
+            <div className={`font-mono text-2xl font-bold ${game.turn() === "b" && !isComplete ? "text-yellow-400" : "text-gray-500"}`}>
               {Math.floor(blackTime / 60)}:{(blackTime % 60).toString().padStart(2, "0")}
             </div>
           </div>
@@ -214,30 +214,30 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
         {/* Side Panel */}
         <div className="space-y-4">
           {/* Commentary */}
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div className="glass rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Icon path={iconPaths.sparkle} size={16} className="text-black" />
-              <span className="text-sm font-semibold text-black">AI Commentary</span>
+              <Icon path={iconPaths.sparkle} size={16} className="text-yellow-400" />
+              <span className="text-sm font-semibold text-white">AI Commentary</span>
             </div>
-            <p className="text-sm text-gray-700 leading-relaxed">{commentary}</p>
+            <p className="text-sm text-gray-300 leading-relaxed">{commentary}</p>
           </div>
 
           {/* Match Stats */}
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            <h4 className="text-sm font-semibold text-black mb-3">Match Stats</h4>
+          <div className="glass rounded-2xl p-4">
+            <h4 className="text-sm font-semibold text-white mb-3">Match Stats</h4>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Moves</span>
-                <span className="font-medium text-black">{moveCount}</span>
+                <span className="text-gray-400">Moves</span>
+                <span className="font-medium text-white">{moveCount}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Status</span>
-                <span className={`font-medium ${isComplete ? "text-green-600" : "text-black"}`}>
+                <span className="text-gray-400">Status</span>
+                <span className={`font-medium ${isComplete ? "text-green-400" : "text-yellow-400"}`}>
                   {isComplete ? "Complete" : "Playing"}
                 </span>
               </div>
               {game.isCheck() && (
-                <div className="px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 font-medium">
+                <div className="px-3 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-sm text-red-400 font-medium">
                   Check!
                 </div>
               )}
@@ -245,15 +245,15 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
           </div>
 
           {/* Move History */}
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            <h4 className="text-sm font-semibold text-black mb-3">Moves</h4>
+          <div className="glass rounded-2xl p-4">
+            <h4 className="text-sm font-semibold text-white mb-3">Moves</h4>
             <div className="max-h-32 overflow-y-auto">
               {game.history().length === 0 ? (
                 <p className="text-xs text-gray-500">Starting...</p>
               ) : (
                 <div className="grid grid-cols-2 gap-1 text-xs">
                   {game.history().map((move, i) => (
-                    <div key={i} className={`px-2 py-1 rounded ${i % 2 === 0 ? "text-black" : "text-gray-600"}`}>
+                    <div key={i} className={`px-2 py-1 rounded ${i % 2 === 0 ? "text-gray-200" : "text-gray-400"}`}>
                       {Math.floor(i / 2) + 1}{i % 2 === 0 ? "." : "..."} {move}
                     </div>
                   ))}
@@ -264,8 +264,8 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
 
           {isComplete && (
             <div className="text-center py-3">
-              <div className="text-lg font-bold text-black mb-1">Match Complete!</div>
-              <div className="text-sm text-gray-700">Updating bracket...</div>
+              <div className="text-lg font-bold text-yellow-400 mb-1">Match Complete!</div>
+              <div className="text-sm text-gray-400">Updating bracket...</div>
             </div>
           )}
         </div>
@@ -372,14 +372,14 @@ export default function TournamentPage() {
   const stats = getTournamentStats();
 
   return (
-    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter bg-[#FFF5EE]">
+    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter bg-gradient-to-br from-black via-gray-900 to-black">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-display text-5xl font-bold text-black mb-1">Tournaments</h1>
-            <p className="text-gray-700 text-base">Manage and watch automated chess tournaments</p>
+            <h1 className="font-display text-5xl font-bold text-white mb-1">Tournaments</h1>
+            <p className="text-gray-400 text-base">Manage and watch automated chess tournaments</p>
           </div>
-          <button onClick={() => setShowCreateModal(true)} className="bg-black text-white px-6 py-3 rounded-lg font-semibold text-base inline-flex items-center gap-2 hover:bg-gray-800 transition-colors">
+          <button onClick={() => setShowCreateModal(true)} className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold text-base inline-flex items-center gap-2 hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg">
             <Icon path={iconPaths.trophy} size={20} />
             Create Tournament
           </button>
@@ -387,17 +387,17 @@ export default function TournamentPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-lg p-5 text-center border border-gray-200">
-            <div className="font-display text-3xl font-bold text-black">{stats.totalTournaments}</div>
-            <div className="text-sm text-gray-600">Tournaments</div>
+          <div className="glass-strong rounded-2xl p-5 text-center shadow-2xl">
+            <div className="font-display text-3xl font-bold text-white">{stats.totalTournaments}</div>
+            <div className="text-sm text-gray-400">Tournaments</div>
           </div>
-          <div className="bg-white rounded-lg p-5 text-center border border-gray-200">
-            <div className="font-display text-3xl font-bold text-black">{stats.completedTournaments}</div>
-            <div className="text-sm text-gray-600">Completed</div>
+          <div className="glass-strong rounded-2xl p-5 text-center shadow-2xl">
+            <div className="font-display text-3xl font-bold text-white">{stats.completedTournaments}</div>
+            <div className="text-sm text-gray-400">Completed</div>
           </div>
-          <div className="bg-white rounded-lg p-5 text-center border border-gray-200">
-            <div className="font-display text-3xl font-bold text-black">{stats.totalMatches}</div>
-            <div className="text-sm text-gray-600">Total Matches</div>
+          <div className="glass-strong rounded-2xl p-5 text-center shadow-2xl">
+            <div className="font-display text-3xl font-bold text-white">{stats.totalMatches}</div>
+            <div className="text-sm text-gray-400">Total Matches</div>
           </div>
         </div>
 
@@ -411,14 +411,14 @@ export default function TournamentPage() {
               className="mb-8"
             >
               <div className="mb-4">
-                <h2 className="text-2xl font-bold text-black mb-1 flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-red-50 border border-red-200 rounded-lg">
+                <h2 className="text-2xl font-bold text-white mb-1 flex items-center gap-3">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-red-500/20 border border-red-500/30 rounded-lg">
                     <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse-soft" />
-                    <span className="text-sm font-bold text-red-600">LIVE NOW</span>
+                    <span className="text-sm font-bold text-red-400">LIVE NOW</span>
                   </div>
                   Watch Tournament Match
                 </h2>
-                <p className="text-gray-700">
+                <p className="text-gray-400">
                   {currentMatch.bot1?.name} vs {currentMatch.bot2?.name} • Round {currentMatch.round} • Match {currentMatch.matchNumber}
                 </p>
               </div>
@@ -429,15 +429,15 @@ export default function TournamentPage() {
 
         {/* Selected tournament detail */}
         {selectedTournament && !currentMatch && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg p-6 mb-8 border border-gray-200">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-strong rounded-3xl p-6 mb-8 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="font-display text-3xl font-semibold text-black">{selectedTournament.name}</h2>
-                <p className="text-base text-gray-700 mt-1">
+                <h2 className="font-display text-3xl font-semibold text-white">{selectedTournament.name}</h2>
+                <p className="text-base text-gray-400 mt-1">
                   {selectedTournament.bots.length} bots • Round {selectedTournament.currentRound} •{" "}
                   <span className={`font-medium ${
-                    selectedTournament.status === 'completed' ? 'text-green-600' :
-                    selectedTournament.status === 'in_progress' ? 'text-black' : 'text-gray-500'
+                    selectedTournament.status === 'completed' ? 'text-green-400' :
+                    selectedTournament.status === 'in_progress' ? 'text-yellow-400' : 'text-gray-500'
                   }`}>
                     {selectedTournament.status === 'completed' ? 'Completed' :
                      selectedTournament.status === 'in_progress' ? 'In Progress' : 'Registration'}
@@ -446,17 +446,17 @@ export default function TournamentPage() {
               </div>
               <div className="flex items-center gap-3">
                 {selectedTournament.status === 'registration' && (
-                  <button onClick={() => handleStartTournament(selectedTournament)} className="bg-black text-white px-5 py-2.5 rounded-lg text-base font-semibold hover:bg-gray-800 transition-colors">
+                  <button onClick={() => handleStartTournament(selectedTournament)} className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-5 py-2.5 rounded-xl text-base font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg">
                     Start Tournament
                   </button>
                 )}
                 {selectedTournament.status === 'in_progress' && (
-                  <button onClick={() => handlePlayNextMatch(selectedTournament)} className="bg-black text-white px-5 py-2.5 rounded-lg text-base font-semibold inline-flex items-center gap-2 hover:bg-gray-800 transition-colors">
+                  <button onClick={() => handlePlayNextMatch(selectedTournament)} className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-5 py-2.5 rounded-xl text-base font-semibold inline-flex items-center gap-2 hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg">
                     <Icon path={iconPaths.play} size={18} />
                     Play Next Match
                   </button>
                 )}
-                <button onClick={() => setSelectedTournament(null)} className="bg-gray-100 text-gray-700 px-5 py-2.5 rounded-lg text-base font-medium hover:bg-gray-200 transition-colors">
+                <button onClick={() => setSelectedTournament(null)} className="glass text-gray-300 px-5 py-2.5 rounded-xl text-base font-medium hover:bg-white/10 transition-colors">
                   Close
                 </button>
               </div>
@@ -466,35 +466,35 @@ export default function TournamentPage() {
             <div className="space-y-6">
               {selectedTournament.rounds.map((round, ri) => (
                 <div key={ri}>
-                  <h3 className="text-base font-semibold text-black mb-3">Round {ri + 1}</h3>
+                  <h3 className="text-base font-semibold text-white mb-3">Round {ri + 1}</h3>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {round.map(match => (
-                      <div key={match.id} className={`p-4 rounded-lg border ${
-                        match.status === 'completed' ? 'bg-green-50 border-green-200' :
-                        match.status === 'playing' ? 'bg-yellow-50 border-yellow-200' :
-                        'bg-gray-50 border-gray-200'
+                      <div key={match.id} className={`p-4 rounded-xl border ${
+                        match.status === 'completed' ? 'bg-green-500/10 border-green-500/30' :
+                        match.status === 'playing' ? 'bg-yellow-500/10 border-yellow-500/30' :
+                        'glass border-white/10'
                       }`}>
                         <div className="flex items-center justify-between text-sm mb-2">
-                          <span className="text-gray-500">Match {match.matchNumber}</span>
+                          <span className="text-gray-400">Match {match.matchNumber}</span>
                           <span className={`font-medium ${
-                            match.status === 'completed' ? 'text-green-600' :
-                            match.status === 'playing' ? 'text-yellow-600' : 'text-gray-500'
+                            match.status === 'completed' ? 'text-green-400' :
+                            match.status === 'playing' ? 'text-yellow-400' : 'text-gray-500'
                           }`}>
                             {match.status === 'completed' ? '✓ Complete' :
                              match.status === 'playing' ? '⏳ Playing' : '○ Pending'}
                           </span>
                         </div>
                         <div className="space-y-1">
-                          <div className={`text-base font-medium ${match.winner?.id === match.bot1?.id ? 'text-green-600' : 'text-black'}`}>
+                          <div className={`text-base font-medium ${match.winner?.id === match.bot1?.id ? 'text-green-400' : 'text-white'}`}>
                             {match.bot1?.name || 'TBD'} <span className="text-sm text-gray-500">({match.bot1?.difficulty})</span>
                           </div>
                           <div className="text-sm text-gray-500">vs</div>
-                          <div className={`text-base font-medium ${match.winner?.id === match.bot2?.id ? 'text-green-600' : 'text-black'}`}>
+                          <div className={`text-base font-medium ${match.winner?.id === match.bot2?.id ? 'text-green-400' : 'text-white'}`}>
                             {match.bot2?.name || 'TBD'} <span className="text-sm text-gray-500">({match.bot2?.difficulty})</span>
                           </div>
                         </div>
                         {match.winner && (
-                          <div className="mt-3 text-sm text-green-600 font-medium flex items-center gap-1">
+                          <div className="mt-3 text-sm text-green-400 font-medium flex items-center gap-1">
                             <Icon path={iconPaths.trophy} size={14} />
                             Winner: {match.winner.name}
                           </div>
@@ -507,10 +507,10 @@ export default function TournamentPage() {
             </div>
 
             {selectedTournament.winner && (
-              <div className="mt-6 p-6 rounded-lg bg-gray-50 border border-gray-200 text-center">
-                <Icon path={iconPaths.trophy} size={40} className="text-black mx-auto mb-3" />
-                <div className="font-display text-2xl font-semibold text-black mb-1">Tournament Champion</div>
-                <div className="text-black font-bold text-xl">{selectedTournament.winner.name}</div>
+              <div className="mt-6 p-6 rounded-2xl bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/30 text-center">
+                <Icon path={iconPaths.trophy} size={40} className="text-yellow-400 mx-auto mb-3" />
+                <div className="font-display text-2xl font-semibold text-white mb-1">Tournament Champion</div>
+                <div className="text-yellow-400 font-bold text-xl">{selectedTournament.winner.name}</div>
               </div>
             )}
           </motion.div>
@@ -524,36 +524,36 @@ export default function TournamentPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-md transition-shadow"
+              className="glass-strong rounded-3xl p-6 shadow-2xl hover:shadow-purple-500/20 transition-all"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                    <Icon path={iconPaths.trophy} size={24} className="text-black" />
+                  <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
+                    <Icon path={iconPaths.trophy} size={24} className="text-yellow-400" />
                   </div>
                   <div>
-                    <div className="font-semibold text-black text-base">{tournament.name}</div>
-                    <div className="text-sm text-gray-600">{tournament.bots.length} bots</div>
+                    <div className="font-semibold text-white text-base">{tournament.name}</div>
+                    <div className="text-sm text-gray-400">{tournament.bots.length} bots</div>
                   </div>
                 </div>
                 <button 
                   onClick={() => handleDeleteTournament(tournament.id)}
-                  className="p-2 rounded-lg hover:bg-red-50 transition-all"
+                  className="p-2 rounded-lg glass hover:bg-red-500/20 transition-all"
                 >
-                  <Icon path={iconPaths.trash} size={18} className="text-gray-500 hover:text-red-600" />
+                  <Icon path={iconPaths.trash} size={18} className="text-gray-400 hover:text-red-400" />
                 </button>
               </div>
               <div className="flex items-center justify-between mb-4">
-                <span className={`text-sm font-medium px-3 py-1 rounded ${
-                  tournament.status === 'completed' ? 'bg-green-100 text-green-700' :
-                  tournament.status === 'in_progress' ? 'bg-yellow-100 text-yellow-700' :
-                  'bg-gray-100 text-gray-700'
+                <span className={`text-sm font-medium px-3 py-1 rounded-lg ${
+                  tournament.status === 'completed' ? 'bg-green-500/20 text-green-400' :
+                  tournament.status === 'in_progress' ? 'bg-yellow-500/20 text-yellow-400' :
+                  'glass text-gray-300'
                 }`}>
                   {tournament.status === 'completed' ? 'Completed' :
                    tournament.status === 'in_progress' ? 'In Progress' : 'Registration'}
                 </span>
                 {tournament.winner && (
-                  <span className="text-sm text-black font-medium flex items-center gap-1">
+                  <span className="text-sm text-yellow-400 font-medium flex items-center gap-1">
                     <Icon path={iconPaths.trophy} size={14} />
                     {tournament.winner.name}
                   </span>
@@ -561,7 +561,7 @@ export default function TournamentPage() {
               </div>
               <button 
                 onClick={() => setSelectedTournament(tournament)}
-                className="w-full py-2.5 bg-black text-white rounded-lg text-base font-medium hover:bg-gray-800 transition-colors"
+                className="w-full py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl text-base font-medium hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg"
               >
                 View Details
               </button>
@@ -571,12 +571,12 @@ export default function TournamentPage() {
 
         {tournaments.length === 0 && (
           <div className="text-center py-16">
-            <div className="w-20 h-20 rounded-lg bg-gray-100 mx-auto mb-6 flex items-center justify-center">
-              <Icon path={iconPaths.trophy} size={40} className="text-black" />
+            <div className="w-20 h-20 rounded-2xl glass-strong mx-auto mb-6 flex items-center justify-center">
+              <Icon path={iconPaths.trophy} size={40} className="text-yellow-400" />
             </div>
-            <h3 className="font-display text-3xl text-black mb-3">No Tournaments Yet</h3>
-            <p className="text-gray-700 text-base mb-8">Create your first tournament to get started</p>
-            <button onClick={() => setShowCreateModal(true)} className="bg-black text-white px-8 py-4 rounded-lg font-semibold text-base hover:bg-gray-800 transition-colors">
+            <h3 className="font-display text-3xl text-white mb-3">No Tournaments Yet</h3>
+            <p className="text-gray-400 text-base mb-8">Create your first tournament to get started</p>
+            <button onClick={() => setShowCreateModal(true)} className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-base hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg">
               Create Tournament
             </button>
           </div>
@@ -654,49 +654,49 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-[#FFF5EE] rounded-lg p-8 max-w-lg w-full border border-gray-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <h3 className="font-display text-3xl font-semibold text-black mb-6">Create Tournament</h3>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="glass-strong rounded-3xl p-8 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <h3 className="font-display text-3xl font-semibold text-white mb-6">Create Tournament</h3>
         
         <div className="space-y-4 mb-6">
           <div>
-            <label className="text-base font-medium text-gray-700 mb-2 block">Tournament Name</label>
+            <label className="text-base font-medium text-gray-300 mb-2 block">Tournament Name</label>
             <input 
               type="text" 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               placeholder="Grand Prix 2024" 
-              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black text-base placeholder-gray-400 outline-none focus:border-black transition-colors" 
+              className="w-full px-4 py-3 glass rounded-xl text-white text-base placeholder-gray-500 outline-none focus:ring-2 focus:ring-purple-500/50" 
             />
           </div>
 
           <div>
-            <label className="text-base font-medium text-gray-700 mb-2 block">
+            <label className="text-base font-medium text-gray-300 mb-2 block">
               Select Bots ({selectedBots.length})
               {uploadedBots.length > 0 && (
-                <span className="ml-2 text-sm text-black">({uploadedBots.length} uploaded)</span>
+                <span className="ml-2 text-sm text-yellow-400">({uploadedBots.length} uploaded)</span>
               )}
             </label>
             
             {uploadedBots.length > 0 && (
               <div className="mb-4">
-                <div className="text-sm text-gray-600 mb-2 font-medium">Your Uploaded Bots</div>
+                <div className="text-sm text-gray-400 mb-2 font-medium">Your Uploaded Bots</div>
                 <div className="grid grid-cols-2 gap-2">
                   {uploadedBots.map(bot => (
                     <button
                       key={bot.id}
                       onClick={() => toggleBot(bot)}
-                      className={`p-3 rounded-lg text-left transition-all border ${
+                      className={`p-3 rounded-xl text-left transition-all ${
                         selectedBots.find(b => b.id === bot.id) 
-                          ? "bg-black text-white border-black" 
-                          : "bg-white border-gray-300 hover:border-gray-400"
+                          ? "glass-strong border-2 border-purple-500/50" 
+                          : "glass hover:bg-white/10"
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <ChessPieces.Knight color={selectedBots.find(b => b.id === bot.id) ? "light" : "dark"} size={18} />
+                        <ChessPieces.Knight color="dark" size={18} />
                         <div>
-                          <div className={`text-sm font-semibold ${selectedBots.find(b => b.id === bot.id) ? "text-white" : "text-black"}`}>{bot.name}</div>
-                          <div className={`text-xs capitalize ${selectedBots.find(b => b.id === bot.id) ? "text-gray-300" : "text-gray-600"}`}>{bot.difficulty}</div>
+                          <div className="text-sm font-semibold text-white">{bot.name}</div>
+                          <div className="text-xs text-gray-400 capitalize">{bot.difficulty}</div>
                         </div>
                       </div>
                     </button>
@@ -705,23 +705,23 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
               </div>
             )}
 
-            <div className="text-sm text-gray-600 mb-2 font-medium">Default Bots</div>
+            <div className="text-sm text-gray-400 mb-2 font-medium">Default Bots</div>
             <div className="grid grid-cols-2 gap-2">
               {defaultBots.map(bot => (
                 <button
                   key={bot.id}
                   onClick={() => toggleBot(bot)}
-                  className={`p-3 rounded-lg text-left transition-all border ${
+                  className={`p-3 rounded-xl text-left transition-all ${
                     selectedBots.find(b => b.id === bot.id) 
-                      ? "bg-black text-white border-black" 
-                      : "bg-white border-gray-300 hover:border-gray-400"
+                      ? "glass-strong border-2 border-purple-500/50" 
+                      : "glass hover:bg-white/10"
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <ChessPieces.Knight color={selectedBots.find(b => b.id === bot.id) ? "light" : "dark"} size={18} />
+                    <ChessPieces.Knight color="dark" size={18} />
                     <div>
-                      <div className={`text-sm font-semibold ${selectedBots.find(b => b.id === bot.id) ? "text-white" : "text-black"}`}>{bot.name}</div>
-                      <div className={`text-xs capitalize ${selectedBots.find(b => b.id === bot.id) ? "text-gray-300" : "text-gray-600"}`}>{bot.difficulty}</div>
+                      <div className="text-sm font-semibold text-white">{bot.name}</div>
+                      <div className="text-xs text-gray-400 capitalize">{bot.difficulty}</div>
                     </div>
                   </div>
                 </button>
@@ -731,8 +731,8 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
         </div>
 
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium text-base hover:bg-gray-200 transition-colors">Cancel</button>
-          <button onClick={handleCreate} className="flex-1 py-3 bg-black text-white rounded-lg font-semibold text-base hover:bg-gray-800 transition-colors">Create</button>
+          <button onClick={onClose} className="flex-1 py-3 glass rounded-xl font-medium text-white text-base hover:bg-white/10 transition-all">Cancel</button>
+          <button onClick={handleCreate} className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold text-base hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg">Create</button>
         </div>
       </motion.div>
     </motion.div>

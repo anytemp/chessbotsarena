@@ -286,6 +286,106 @@ export default function Analysis() {
                   </motion.div>
                 )}
 
+                {/* 4. GRANDMASTER REVIEW */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="glass-strong rounded-3xl p-6 shadow-xl"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+                      <Icon path={iconPaths.trophy} size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-white">Grandmaster Review</h3>
+                      <p className="text-sm text-gray-400">AI-generated feedback and suggestions</p>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    {/* Overall Assessment */}
+                    <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Icon path={iconPaths.sparkle} size={16} className="text-purple-400" />
+                        <span className="text-sm font-semibold text-purple-400">Overall Assessment</span>
+                      </div>
+                      <p className="text-sm text-gray-300 leading-relaxed">
+                        {selectedGame.analysis.moveQuality.excellent > 60 
+                          ? "Excellent play! Your moves showed strong positional understanding and tactical awareness."
+                          : selectedGame.analysis.moveQuality.excellent > 40
+                          ? "Solid performance with good strategic decisions. A few opportunities were missed in the middlegame."
+                          : "The game showed potential but needs improvement in tactical calculation and positional play."}
+                      </p>
+                    </div>
+
+                    {/* Key Suggestions */}
+                    <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Icon path={iconPaths.target} size={16} className="text-blue-400" />
+                        <span className="text-sm font-semibold text-blue-400">Key Suggestions</span>
+                      </div>
+                      <ul className="space-y-2">
+                        {selectedGame.analysis.castles === 0 && (
+                          <li className="text-sm text-gray-300 flex items-start gap-2">
+                            <span className="text-blue-400 mt-0.5">•</span>
+                            <span>Consider castling earlier to secure your king's safety, especially in the opening phase.</span>
+                          </li>
+                        )}
+                        {selectedGame.analysis.captures < 5 && (
+                          <li className="text-sm text-gray-300 flex items-start gap-2">
+                            <span className="text-blue-400 mt-0.5">•</span>
+                            <span>Look for tactical opportunities to capture opponent pieces. Material advantage often decides games.</span>
+                          </li>
+                        )}
+                        {selectedGame.analysis.checks < 3 && (
+                          <li className="text-sm text-gray-300 flex items-start gap-2">
+                            <span className="text-blue-400 mt-0.5">•</span>
+                            <span>Create more checks to put pressure on your opponent's king and force defensive moves.</span>
+                          </li>
+                        )}
+                        {selectedGame.analysis.moveQuality.blunder > 10 && (
+                          <li className="text-sm text-gray-300 flex items-start gap-2">
+                            <span className="text-blue-400 mt-0.5">•</span>
+                            <span>Double-check your moves before playing them. Several blunders cost you material or positional advantage.</span>
+                          </li>
+                        )}
+                        {selectedGame.moveCount < 30 && (
+                          <li className="text-sm text-gray-300 flex items-start gap-2">
+                            <span className="text-blue-400 mt-0.5">•</span>
+                            <span>The game ended quickly. Focus on developing all pieces before launching attacks.</span>
+                          </li>
+                        )}
+                        <li className="text-sm text-gray-300 flex items-start gap-2">
+                          <span className="text-blue-400 mt-0.5">•</span>
+                          <span>Control the center squares (e4, d4, e5, d5) to maximize your pieces' activity.</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* Performance Summary */}
+                    <div className="p-4 rounded-2xl bg-green-500/10 border border-green-500/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Icon path={iconPaths.check} size={16} className="text-green-400" />
+                        <span className="text-sm font-semibold text-green-400">Performance Summary</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <div className="text-2xl font-bold text-green-400">{selectedGame.analysis.moveQuality.excellent}%</div>
+                          <div className="text-xs text-gray-400">Excellent Moves</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-yellow-400">{selectedGame.analysis.moveQuality.good}%</div>
+                          <div className="text-xs text-gray-400">Good Moves</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-red-400">{selectedGame.analysis.moveQuality.blunder}%</div>
+                          <div className="text-xs text-gray-400">Blunders</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
                 {/* 4. GAME INFO */}
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
