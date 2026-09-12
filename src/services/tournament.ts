@@ -37,6 +37,32 @@ export interface Tournament {
 
 const TOURNAMENTS_KEY = 'chessbot_tournaments';
 
+// Calculate material advantage
+function calculateMaterial(game: Chess) {
+  const pieceValues: Record<string, number> = {
+    p: 1, n: 3, b: 3, r: 5, q: 9, k: 0
+  };
+  
+  let white = 0;
+  let black = 0;
+  
+  const board = game.board();
+  for (const row of board) {
+    for (const square of row) {
+      if (square) {
+        const value = pieceValues[square.type] || 0;
+        if (square.color === 'w') {
+          white += value;
+        } else {
+          black += value;
+        }
+      }
+    }
+  }
+  
+  return { white, black };
+}
+
 export function getTournaments(): Tournament[] {
   const stored = localStorage.getItem(TOURNAMENTS_KEY);
   if (!stored) return [];
@@ -133,10 +159,24 @@ export function playTournamentMatch(match: TournamentMatch): TournamentMatch {
   if (game.isCheckmate()) {
     winner = game.turn() === 'w' ? match.bot2 : match.bot1;
     result = game.turn() === 'w' ? 'black' : 'white';
-  } else {
-    // Draw or max moves reached - random winner
+  } else if (game.isDraw()) {
+    // Actual draw
     winner = Math.random() > 0.5 ? match.bot1 : match.bot2;
     result = 'draw';
+  } else {
+    // Game ended by max moves - determine winner by material
+    const material = calculateMaterial(game);
+    if (material.white > material.black) {
+      winner = match.bot1;
+      result = 'white';
+    } else if (material.black > material.white) {
+      winner = match.bot2;
+      result = 'black';
+    } else {
+      // Equal material - random winner
+      winner = Math.random() > 0.5 ? match.bot1 : match.bot2;
+      result = 'draw';
+    }
   }
 
   // Save to game history
