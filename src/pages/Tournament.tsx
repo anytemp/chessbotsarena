@@ -190,7 +190,7 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
-                <ChessPieces.King color="dark" size={24} />
+                <ChessPieces.King color="light" size={24} />
               </div>
               <div>
                 <div className="font-semibold text-white text-base">{match.bot1?.name}</div>
@@ -209,7 +209,7 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
                 const row = Math.floor(i / 8);
                 const col = i % 8;
                 const isLight = (row + col) % 2 === 0;
-                const pieceData = board[row][col];
+                const pieceData = board[7 - row][col];
                 const lastMove = game.history({ verbose: true }).slice(-1)[0];
                 const square = `${"abcdefgh"[col]}${8 - row}`;
                 const isLastMove = lastMove && (lastMove.from === square || lastMove.to === square);
@@ -241,7 +241,7 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
-                <ChessPieces.King color="light" size={24} />
+                <ChessPieces.King color="dark" size={24} />
               </div>
               <div>
                 <div className="font-semibold text-white text-base">{match.bot2?.name}</div>
