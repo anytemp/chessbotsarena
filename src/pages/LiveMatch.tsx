@@ -230,7 +230,7 @@ export default function LiveMatch() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl neu-flat flex items-center justify-center">
-                    <ChessPieces.King color="dark" size={20} />
+                    <ChessPieces.King color="light" size={20} />
                   </div>
                   <div>
                     <div className="font-semibold text-[#2C1810] text-sm">{matchup.bot1.name}</div>
@@ -280,7 +280,7 @@ export default function LiveMatch() {
               <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl neu-flat flex items-center justify-center">
-                    <ChessPieces.King color="light" size={20} />
+                    <ChessPieces.King color="dark" size={20} />
                   </div>
                   <div>
                     <div className="font-semibold text-[#2C1810] text-sm">{matchup.bot2.name}</div>
