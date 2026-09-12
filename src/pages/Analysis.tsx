@@ -93,7 +93,7 @@ export default function Analysis() {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter">
+    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>

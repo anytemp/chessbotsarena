@@ -124,19 +124,19 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
   const board = game.board();
 
   return (
-    <div className="neu-raised rounded-3xl p-6">
+    <div className="bg-white rounded-lg p-6 border border-gray-200">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/30 rounded-lg">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-lg">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse-soft" />
             <span className="text-sm font-bold text-red-600">LIVE</span>
           </div>
-          <span className="text-base text-[#5C4A3A] font-medium">Tournament Match • Round {match.round}</span>
+          <span className="text-base text-gray-700 font-medium">Tournament Match • Round {match.round}</span>
         </div>
-        <div className="flex items-center gap-2 neu-btn px-3 py-1.5 rounded-lg">
-          <Icon path={iconPaths.eye} size={16} className="text-[#8B7A6A]" />
-          <span className="text-sm text-[#5C4A3A]">{Math.floor(Math.random() * 30) + 10} watching</span>
+        <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg">
+          <Icon path={iconPaths.eye} size={16} className="text-gray-600" />
+          <span className="text-sm text-gray-700">{Math.floor(Math.random() * 30) + 10} watching</span>
         </div>
       </div>
 
@@ -146,22 +146,22 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
           {/* White Player */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl neu-flat flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
                 <ChessPieces.King color="dark" size={24} />
               </div>
               <div>
-                <div className="font-semibold text-[#2C1810] text-base">{match.bot1?.name}</div>
-                <div className="text-sm text-[#8B7A6A]">White • {match.bot1?.difficulty}</div>
+                <div className="font-semibold text-black text-base">{match.bot1?.name}</div>
+                <div className="text-sm text-gray-600">White • {match.bot1?.difficulty}</div>
               </div>
             </div>
-            <div className={`font-mono text-2xl font-bold ${game.turn() === "w" && !isComplete ? "text-[#8B6914]" : "text-[#8B7A6A]"}`}>
+            <div className={`font-mono text-2xl font-bold ${game.turn() === "w" && !isComplete ? "text-black" : "text-gray-400"}`}>
               {Math.floor(whiteTime / 60)}:{(whiteTime % 60).toString().padStart(2, "0")}
             </div>
           </div>
 
           {/* Chess Board */}
           <div className="flex justify-center mb-4">
-            <div className="w-full max-w-lg aspect-square grid grid-cols-8 rounded-2xl overflow-hidden shadow-2xl border-2 border-[#c9c1b5]/50">
+            <div className="w-full max-w-lg aspect-square grid grid-cols-8 rounded-lg overflow-hidden shadow-lg border-2 border-gray-300">
               {Array.from({ length: 64 }, (_, i) => {
                 const row = Math.floor(i / 8);
                 const col = i % 8;
@@ -197,15 +197,15 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
           {/* Black Player */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl neu-flat flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
                 <ChessPieces.King color="light" size={24} />
               </div>
               <div>
-                <div className="font-semibold text-[#2C1810] text-base">{match.bot2?.name}</div>
-                <div className="text-sm text-[#8B7A6A]">Black • {match.bot2?.difficulty}</div>
+                <div className="font-semibold text-black text-base">{match.bot2?.name}</div>
+                <div className="text-sm text-gray-600">Black • {match.bot2?.difficulty}</div>
               </div>
             </div>
-            <div className={`font-mono text-2xl font-bold ${game.turn() === "b" && !isComplete ? "text-[#8B6914]" : "text-[#8B7A6A]"}`}>
+            <div className={`font-mono text-2xl font-bold ${game.turn() === "b" && !isComplete ? "text-black" : "text-gray-400"}`}>
               {Math.floor(blackTime / 60)}:{(blackTime % 60).toString().padStart(2, "0")}
             </div>
           </div>
@@ -214,30 +214,30 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
         {/* Side Panel */}
         <div className="space-y-4">
           {/* Commentary */}
-          <div className="neu-pressed rounded-2xl p-4">
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
             <div className="flex items-center gap-2 mb-2">
-              <Icon path={iconPaths.sparkle} size={16} className="text-[#8B6914]" />
-              <span className="text-sm font-semibold text-[#2C1810]">AI Commentary</span>
+              <Icon path={iconPaths.sparkle} size={16} className="text-black" />
+              <span className="text-sm font-semibold text-black">AI Commentary</span>
             </div>
-            <p className="text-sm text-[#5C4A3A] leading-relaxed">{commentary}</p>
+            <p className="text-sm text-gray-700 leading-relaxed">{commentary}</p>
           </div>
 
           {/* Match Stats */}
-          <div className="neu-pressed rounded-2xl p-4">
-            <h4 className="text-sm font-semibold text-[#2C1810] mb-3">Match Stats</h4>
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h4 className="text-sm font-semibold text-black mb-3">Match Stats</h4>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#5C4A3A]">Moves</span>
-                <span className="font-medium text-[#2C1810]">{moveCount}</span>
+                <span className="text-gray-600">Moves</span>
+                <span className="font-medium text-black">{moveCount}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#5C4A3A]">Status</span>
-                <span className={`font-medium ${isComplete ? "text-green-600" : "text-[#8B6914]"}`}>
+                <span className="text-gray-600">Status</span>
+                <span className={`font-medium ${isComplete ? "text-green-600" : "text-black"}`}>
                   {isComplete ? "Complete" : "Playing"}
                 </span>
               </div>
               {game.isCheck() && (
-                <div className="px-3 py-2 bg-red-100 border border-red-200 rounded-lg text-sm text-red-700 font-medium">
+                <div className="px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 font-medium">
                   Check!
                 </div>
               )}
@@ -245,15 +245,15 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
           </div>
 
           {/* Move History */}
-          <div className="neu-pressed rounded-2xl p-4">
-            <h4 className="text-sm font-semibold text-[#2C1810] mb-3">Moves</h4>
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h4 className="text-sm font-semibold text-black mb-3">Moves</h4>
             <div className="max-h-32 overflow-y-auto">
               {game.history().length === 0 ? (
-                <p className="text-xs text-[#8B7A6A]">Starting...</p>
+                <p className="text-xs text-gray-500">Starting...</p>
               ) : (
                 <div className="grid grid-cols-2 gap-1 text-xs">
                   {game.history().map((move, i) => (
-                    <div key={i} className={`px-2 py-1 rounded ${i % 2 === 0 ? "text-[#2C1810]" : "text-[#5C4A3A]"}`}>
+                    <div key={i} className={`px-2 py-1 rounded ${i % 2 === 0 ? "text-black" : "text-gray-600"}`}>
                       {Math.floor(i / 2) + 1}{i % 2 === 0 ? "." : "..."} {move}
                     </div>
                   ))}
@@ -264,8 +264,8 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
 
           {isComplete && (
             <div className="text-center py-3">
-              <div className="text-lg font-bold text-[#8B6914] mb-1">Match Complete!</div>
-              <div className="text-sm text-[#5C4A3A]">Updating bracket...</div>
+              <div className="text-lg font-bold text-black mb-1">Match Complete!</div>
+              <div className="text-sm text-gray-700">Updating bracket...</div>
             </div>
           )}
         </div>
@@ -372,14 +372,14 @@ export default function TournamentPage() {
   const stats = getTournamentStats();
 
   return (
-    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter">
+    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter bg-[#FFF5EE]">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="luxury-heading text-5xl text-[#2C1810] mb-1">Tournaments</h1>
-            <p className="text-[#5C4A3A] text-base">Manage and watch automated chess tournaments</p>
+            <h1 className="font-display text-5xl font-bold text-black mb-1">Tournaments</h1>
+            <p className="text-gray-700 text-base">Manage and watch automated chess tournaments</p>
           </div>
-          <button onClick={() => setShowCreateModal(true)} className="neu-accent px-6 py-3 rounded-xl font-semibold text-base inline-flex items-center gap-2">
+          <button onClick={() => setShowCreateModal(true)} className="bg-black text-white px-6 py-3 rounded-lg font-semibold text-base inline-flex items-center gap-2 hover:bg-gray-800 transition-colors">
             <Icon path={iconPaths.trophy} size={20} />
             Create Tournament
           </button>
@@ -387,17 +387,17 @@ export default function TournamentPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="neu-raised rounded-2xl p-5 text-center">
-            <div className="font-display text-3xl font-bold text-[#8B6914]">{stats.totalTournaments}</div>
-            <div className="text-sm text-[#5C4A3A]">Tournaments</div>
+          <div className="bg-white rounded-lg p-5 text-center border border-gray-200">
+            <div className="font-display text-3xl font-bold text-black">{stats.totalTournaments}</div>
+            <div className="text-sm text-gray-600">Tournaments</div>
           </div>
-          <div className="neu-raised rounded-2xl p-5 text-center">
-            <div className="font-display text-3xl font-bold text-[#8B6914]">{stats.completedTournaments}</div>
-            <div className="text-sm text-[#5C4A3A]">Completed</div>
+          <div className="bg-white rounded-lg p-5 text-center border border-gray-200">
+            <div className="font-display text-3xl font-bold text-black">{stats.completedTournaments}</div>
+            <div className="text-sm text-gray-600">Completed</div>
           </div>
-          <div className="neu-raised rounded-2xl p-5 text-center">
-            <div className="font-display text-3xl font-bold text-[#8B6914]">{stats.totalMatches}</div>
-            <div className="text-sm text-[#5C4A3A]">Total Matches</div>
+          <div className="bg-white rounded-lg p-5 text-center border border-gray-200">
+            <div className="font-display text-3xl font-bold text-black">{stats.totalMatches}</div>
+            <div className="text-sm text-gray-600">Total Matches</div>
           </div>
         </div>
 
@@ -411,14 +411,14 @@ export default function TournamentPage() {
               className="mb-8"
             >
               <div className="mb-4">
-                <h2 className="text-2xl font-bold text-[#2C1810] mb-1 flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <h2 className="text-2xl font-bold text-black mb-1 flex items-center gap-3">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-red-50 border border-red-200 rounded-lg">
                     <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse-soft" />
                     <span className="text-sm font-bold text-red-600">LIVE NOW</span>
                   </div>
                   Watch Tournament Match
                 </h2>
-                <p className="text-[#5C4A3A]">
+                <p className="text-gray-700">
                   {currentMatch.bot1?.name} vs {currentMatch.bot2?.name} • Round {currentMatch.round} • Match {currentMatch.matchNumber}
                 </p>
               </div>
@@ -429,15 +429,15 @@ export default function TournamentPage() {
 
         {/* Selected tournament detail */}
         {selectedTournament && !currentMatch && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="neu-raised rounded-3xl p-6 mb-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg p-6 mb-8 border border-gray-200">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="font-display text-3xl font-semibold text-[#2C1810]">{selectedTournament.name}</h2>
-                <p className="text-base text-[#5C4A3A] mt-1">
+                <h2 className="font-display text-3xl font-semibold text-black">{selectedTournament.name}</h2>
+                <p className="text-base text-gray-700 mt-1">
                   {selectedTournament.bots.length} bots • Round {selectedTournament.currentRound} •{" "}
                   <span className={`font-medium ${
                     selectedTournament.status === 'completed' ? 'text-green-600' :
-                    selectedTournament.status === 'in_progress' ? 'text-[#8B6914]' : 'text-[#8B7A6A]'
+                    selectedTournament.status === 'in_progress' ? 'text-black' : 'text-gray-500'
                   }`}>
                     {selectedTournament.status === 'completed' ? 'Completed' :
                      selectedTournament.status === 'in_progress' ? 'In Progress' : 'Registration'}
@@ -446,17 +446,17 @@ export default function TournamentPage() {
               </div>
               <div className="flex items-center gap-3">
                 {selectedTournament.status === 'registration' && (
-                  <button onClick={() => handleStartTournament(selectedTournament)} className="neu-accent px-5 py-2.5 rounded-xl text-base font-semibold">
+                  <button onClick={() => handleStartTournament(selectedTournament)} className="bg-black text-white px-5 py-2.5 rounded-lg text-base font-semibold hover:bg-gray-800 transition-colors">
                     Start Tournament
                   </button>
                 )}
                 {selectedTournament.status === 'in_progress' && (
-                  <button onClick={() => handlePlayNextMatch(selectedTournament)} className="neu-accent px-5 py-2.5 rounded-xl text-base font-semibold inline-flex items-center gap-2">
+                  <button onClick={() => handlePlayNextMatch(selectedTournament)} className="bg-black text-white px-5 py-2.5 rounded-lg text-base font-semibold inline-flex items-center gap-2 hover:bg-gray-800 transition-colors">
                     <Icon path={iconPaths.play} size={18} />
                     Play Next Match
                   </button>
                 )}
-                <button onClick={() => setSelectedTournament(null)} className="neu-btn px-5 py-2.5 rounded-xl text-base font-medium text-[#5C4A3A]">
+                <button onClick={() => setSelectedTournament(null)} className="bg-gray-100 text-gray-700 px-5 py-2.5 rounded-lg text-base font-medium hover:bg-gray-200 transition-colors">
                   Close
                 </button>
               </div>
@@ -466,31 +466,31 @@ export default function TournamentPage() {
             <div className="space-y-6">
               {selectedTournament.rounds.map((round, ri) => (
                 <div key={ri}>
-                  <h3 className="text-base font-semibold text-[#2C1810] mb-3">Round {ri + 1}</h3>
+                  <h3 className="text-base font-semibold text-black mb-3">Round {ri + 1}</h3>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {round.map(match => (
-                      <div key={match.id} className={`p-4 rounded-xl border ${
+                      <div key={match.id} className={`p-4 rounded-lg border ${
                         match.status === 'completed' ? 'bg-green-50 border-green-200' :
                         match.status === 'playing' ? 'bg-yellow-50 border-yellow-200' :
-                        'bg-white/50 border-[#c9c1b5]/30'
+                        'bg-gray-50 border-gray-200'
                       }`}>
                         <div className="flex items-center justify-between text-sm mb-2">
-                          <span className="text-[#8B7A6A]">Match {match.matchNumber}</span>
+                          <span className="text-gray-500">Match {match.matchNumber}</span>
                           <span className={`font-medium ${
                             match.status === 'completed' ? 'text-green-600' :
-                            match.status === 'playing' ? 'text-yellow-600' : 'text-[#8B7A6A]'
+                            match.status === 'playing' ? 'text-yellow-600' : 'text-gray-500'
                           }`}>
                             {match.status === 'completed' ? '✓ Complete' :
                              match.status === 'playing' ? '⏳ Playing' : '○ Pending'}
                           </span>
                         </div>
                         <div className="space-y-1">
-                          <div className={`text-base font-medium ${match.winner?.id === match.bot1?.id ? 'text-green-700' : 'text-[#2C1810]'}`}>
-                            {match.bot1?.name || 'TBD'} <span className="text-sm text-[#8B7A6A]">({match.bot1?.difficulty})</span>
+                          <div className={`text-base font-medium ${match.winner?.id === match.bot1?.id ? 'text-green-600' : 'text-black'}`}>
+                            {match.bot1?.name || 'TBD'} <span className="text-sm text-gray-500">({match.bot1?.difficulty})</span>
                           </div>
-                          <div className="text-sm text-[#8B7A6A]">vs</div>
-                          <div className={`text-base font-medium ${match.winner?.id === match.bot2?.id ? 'text-green-700' : 'text-[#2C1810]'}`}>
-                            {match.bot2?.name || 'TBD'} <span className="text-sm text-[#8B7A6A]">({match.bot2?.difficulty})</span>
+                          <div className="text-sm text-gray-500">vs</div>
+                          <div className={`text-base font-medium ${match.winner?.id === match.bot2?.id ? 'text-green-600' : 'text-black'}`}>
+                            {match.bot2?.name || 'TBD'} <span className="text-sm text-gray-500">({match.bot2?.difficulty})</span>
                           </div>
                         </div>
                         {match.winner && (
@@ -507,10 +507,10 @@ export default function TournamentPage() {
             </div>
 
             {selectedTournament.winner && (
-              <div className="mt-6 p-6 rounded-2xl bg-gradient-to-br from-[#8B6914]/10 to-[#B8941C]/10 border border-[#8B6914]/20 text-center">
-                <Icon path={iconPaths.trophy} size={40} className="text-[#8B6914] mx-auto mb-3" />
-                <div className="font-display text-2xl font-semibold text-[#2C1810] mb-1">Tournament Champion</div>
-                <div className="text-[#8B6914] font-bold text-xl">{selectedTournament.winner.name}</div>
+              <div className="mt-6 p-6 rounded-lg bg-gray-50 border border-gray-200 text-center">
+                <Icon path={iconPaths.trophy} size={40} className="text-black mx-auto mb-3" />
+                <div className="font-display text-2xl font-semibold text-black mb-1">Tournament Champion</div>
+                <div className="text-black font-bold text-xl">{selectedTournament.winner.name}</div>
               </div>
             )}
           </motion.div>
@@ -524,36 +524,36 @@ export default function TournamentPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="neu-raised rounded-3xl p-6"
+              className="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl neu-flat flex items-center justify-center">
-                    <Icon path={iconPaths.trophy} size={24} className="text-[#8B6914]" />
+                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                    <Icon path={iconPaths.trophy} size={24} className="text-black" />
                   </div>
                   <div>
-                    <div className="font-semibold text-[#2C1810] text-base">{tournament.name}</div>
-                    <div className="text-sm text-[#8B7A6A]">{tournament.bots.length} bots</div>
+                    <div className="font-semibold text-black text-base">{tournament.name}</div>
+                    <div className="text-sm text-gray-600">{tournament.bots.length} bots</div>
                   </div>
                 </div>
                 <button 
                   onClick={() => handleDeleteTournament(tournament.id)}
-                  className="p-2 neu-btn rounded-lg hover:bg-red-50 transition-all"
+                  className="p-2 rounded-lg hover:bg-red-50 transition-all"
                 >
-                  <Icon path={iconPaths.trash} size={18} className="text-[#8B7A6A] hover:text-red-600" />
+                  <Icon path={iconPaths.trash} size={18} className="text-gray-500 hover:text-red-600" />
                 </button>
               </div>
               <div className="flex items-center justify-between mb-4">
-                <span className={`text-sm font-medium px-3 py-1 rounded-lg ${
+                <span className={`text-sm font-medium px-3 py-1 rounded ${
                   tournament.status === 'completed' ? 'bg-green-100 text-green-700' :
                   tournament.status === 'in_progress' ? 'bg-yellow-100 text-yellow-700' :
-                  'bg-[#D4CFC5] text-[#5C4A3A]'
+                  'bg-gray-100 text-gray-700'
                 }`}>
                   {tournament.status === 'completed' ? 'Completed' :
                    tournament.status === 'in_progress' ? 'In Progress' : 'Registration'}
                 </span>
                 {tournament.winner && (
-                  <span className="text-sm text-[#8B6914] font-medium flex items-center gap-1">
+                  <span className="text-sm text-black font-medium flex items-center gap-1">
                     <Icon path={iconPaths.trophy} size={14} />
                     {tournament.winner.name}
                   </span>
@@ -561,7 +561,7 @@ export default function TournamentPage() {
               </div>
               <button 
                 onClick={() => setSelectedTournament(tournament)}
-                className="w-full py-2.5 neu-btn rounded-xl text-base font-medium text-[#5C4A3A]"
+                className="w-full py-2.5 bg-black text-white rounded-lg text-base font-medium hover:bg-gray-800 transition-colors"
               >
                 View Details
               </button>
@@ -571,12 +571,12 @@ export default function TournamentPage() {
 
         {tournaments.length === 0 && (
           <div className="text-center py-16">
-            <div className="w-20 h-20 rounded-2xl neu-flat mx-auto mb-6 flex items-center justify-center">
-              <Icon path={iconPaths.trophy} size={40} className="text-[#8B6914]" />
+            <div className="w-20 h-20 rounded-lg bg-gray-100 mx-auto mb-6 flex items-center justify-center">
+              <Icon path={iconPaths.trophy} size={40} className="text-black" />
             </div>
-            <h3 className="font-display text-3xl text-[#2C1810] mb-3">No Tournaments Yet</h3>
-            <p className="text-[#5C4A3A] text-base mb-8">Create your first tournament to get started</p>
-            <button onClick={() => setShowCreateModal(true)} className="neu-accent px-8 py-4 rounded-xl font-semibold text-base">
+            <h3 className="font-display text-3xl text-black mb-3">No Tournaments Yet</h3>
+            <p className="text-gray-700 text-base mb-8">Create your first tournament to get started</p>
+            <button onClick={() => setShowCreateModal(true)} className="bg-black text-white px-8 py-4 rounded-lg font-semibold text-base hover:bg-gray-800 transition-colors">
               Create Tournament
             </button>
           </div>
@@ -655,48 +655,48 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-[#E8E0D4] rounded-3xl p-8 max-w-lg w-full neu-raised max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <h3 className="font-display text-3xl font-semibold text-[#2C1810] mb-6">Create Tournament</h3>
+      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-[#FFF5EE] rounded-lg p-8 max-w-lg w-full border border-gray-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <h3 className="font-display text-3xl font-semibold text-black mb-6">Create Tournament</h3>
         
         <div className="space-y-4 mb-6">
           <div>
-            <label className="text-base font-medium text-[#5C4A3A] mb-2 block">Tournament Name</label>
+            <label className="text-base font-medium text-gray-700 mb-2 block">Tournament Name</label>
             <input 
               type="text" 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               placeholder="Grand Prix 2024" 
-              className="w-full px-4 py-3 neu-pressed rounded-xl text-[#2C1810] text-base placeholder-[#8B7A6A] outline-none" 
+              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black text-base placeholder-gray-400 outline-none focus:border-black transition-colors" 
             />
           </div>
 
           <div>
-            <label className="text-base font-medium text-[#5C4A3A] mb-2 block">
+            <label className="text-base font-medium text-gray-700 mb-2 block">
               Select Bots ({selectedBots.length})
               {uploadedBots.length > 0 && (
-                <span className="ml-2 text-sm text-[#8B6914]">({uploadedBots.length} uploaded)</span>
+                <span className="ml-2 text-sm text-black">({uploadedBots.length} uploaded)</span>
               )}
             </label>
             
             {uploadedBots.length > 0 && (
               <div className="mb-4">
-                <div className="text-sm text-[#8B7A6A] mb-2 font-medium">Your Uploaded Bots</div>
+                <div className="text-sm text-gray-600 mb-2 font-medium">Your Uploaded Bots</div>
                 <div className="grid grid-cols-2 gap-2">
                   {uploadedBots.map(bot => (
                     <button
                       key={bot.id}
                       onClick={() => toggleBot(bot)}
-                      className={`p-3 rounded-xl text-left transition-all ${
+                      className={`p-3 rounded-lg text-left transition-all border ${
                         selectedBots.find(b => b.id === bot.id) 
-                          ? "neu-pressed border-2 border-[#8B6914]" 
-                          : "neu-btn"
+                          ? "bg-black text-white border-black" 
+                          : "bg-white border-gray-300 hover:border-gray-400"
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <ChessPieces.Knight color="dark" size={18} />
+                        <ChessPieces.Knight color={selectedBots.find(b => b.id === bot.id) ? "light" : "dark"} size={18} />
                         <div>
-                          <div className="text-sm font-semibold text-[#2C1810]">{bot.name}</div>
-                          <div className="text-xs text-[#8B7A6A] capitalize">{bot.difficulty}</div>
+                          <div className={`text-sm font-semibold ${selectedBots.find(b => b.id === bot.id) ? "text-white" : "text-black"}`}>{bot.name}</div>
+                          <div className={`text-xs capitalize ${selectedBots.find(b => b.id === bot.id) ? "text-gray-300" : "text-gray-600"}`}>{bot.difficulty}</div>
                         </div>
                       </div>
                     </button>
@@ -705,23 +705,23 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
               </div>
             )}
 
-            <div className="text-sm text-[#8B7A6A] mb-2 font-medium">Default Bots</div>
+            <div className="text-sm text-gray-600 mb-2 font-medium">Default Bots</div>
             <div className="grid grid-cols-2 gap-2">
               {defaultBots.map(bot => (
                 <button
                   key={bot.id}
                   onClick={() => toggleBot(bot)}
-                  className={`p-3 rounded-xl text-left transition-all ${
+                  className={`p-3 rounded-lg text-left transition-all border ${
                     selectedBots.find(b => b.id === bot.id) 
-                      ? "neu-pressed border-2 border-[#8B6914]" 
-                      : "neu-btn"
+                      ? "bg-black text-white border-black" 
+                      : "bg-white border-gray-300 hover:border-gray-400"
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <ChessPieces.Knight color="dark" size={18} />
+                    <ChessPieces.Knight color={selectedBots.find(b => b.id === bot.id) ? "light" : "dark"} size={18} />
                     <div>
-                      <div className="text-sm font-semibold text-[#2C1810]">{bot.name}</div>
-                      <div className="text-xs text-[#8B7A6A] capitalize">{bot.difficulty}</div>
+                      <div className={`text-sm font-semibold ${selectedBots.find(b => b.id === bot.id) ? "text-white" : "text-black"}`}>{bot.name}</div>
+                      <div className={`text-xs capitalize ${selectedBots.find(b => b.id === bot.id) ? "text-gray-300" : "text-gray-600"}`}>{bot.difficulty}</div>
                     </div>
                   </div>
                 </button>
@@ -731,8 +731,8 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
         </div>
 
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 py-3 neu-btn rounded-xl font-medium text-[#5C4A3A] text-base">Cancel</button>
-          <button onClick={handleCreate} className="flex-1 py-3 bg-gradient-to-br from-[#8B6914] to-[#B8941C] text-white rounded-xl font-semibold text-base">Create</button>
+          <button onClick={onClose} className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium text-base hover:bg-gray-200 transition-colors">Cancel</button>
+          <button onClick={handleCreate} className="flex-1 py-3 bg-black text-white rounded-lg font-semibold text-base hover:bg-gray-800 transition-colors">Create</button>
         </div>
       </motion.div>
     </motion.div>
