@@ -171,7 +171,7 @@ export default function HumanGame() {
                     const col = i % 8;
                     const square = `${"abcdefgh"[col]}${8 - row}`;
                     const isLight = (row + col) % 2 === 0;
-                    const pieceData = board[row][col];
+                    const pieceData = board[7 - row][col];
                     const isSelected = selectedSquare === square;
                     const isLegal = legalSquares.includes(square);
                     const lastMove = gameState.moveHistory[gameState.moveHistory.length - 1];

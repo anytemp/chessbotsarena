@@ -249,7 +249,7 @@ export default function LiveMatch() {
                     const row = Math.floor(i / 8);
                     const col = i % 8;
                     const isLight = (row + col) % 2 === 0;
-                    const pieceData = board[row][col];
+                    const pieceData = board[7 - row][col];
                     const lastMove = gameState.moveHistory[gameState.moveHistory.length - 1];
                     const square = `${"abcdefgh"[col]}${8 - row}`;
                     const isLastMove = lastMove && (lastMove.from === square || lastMove.to === square);
