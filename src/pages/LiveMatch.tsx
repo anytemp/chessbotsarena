@@ -18,7 +18,29 @@ const iconPaths = {
   sparkle: "M12 3v18M3 12h18",
   eye: "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z",
   trophy: "M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M18 2H6v7a6 6 0 0 0 12 0V2Z",
+  refresh: "M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15",
 };
+
+// Bot pool for variety
+const BOT_POOL = [
+  { name: "StockfishBot", difficulty: "hard", style: "Aggressive" },
+  { name: "AlphaClone", difficulty: "hard", style: "Positional" },
+  { name: "DeepPawn", difficulty: "medium", style: "Tactical" },
+  { name: "KnightRider", difficulty: "medium", style: "Dynamic" },
+  { name: "RookieBot", difficulty: "easy", style: "Defensive" },
+  { name: "BishopAI", difficulty: "easy", style: "Solid" },
+  { name: "QueenGambit", difficulty: "hard", style: "Sacrificial" },
+  { name: "PawnStorm", difficulty: "medium", style: "Attacking" },
+];
+
+// Get random matchup
+function getRandomMatchup() {
+  const shuffled = [...BOT_POOL].sort(() => Math.random() - 0.5);
+  return {
+    bot1: shuffled[0],
+    bot2: shuffled[1],
+  };
+}
 
 export default function LiveMatch() {
   const navigate = useNavigate();
@@ -30,8 +52,7 @@ export default function LiveMatch() {
   const [blackTime, setBlackTime] = useState(600);
   const [matchStatus, setMatchStatus] = useState<"playing" | "completed">("playing");
   const [matchResult, setMatchResult] = useState("");
-  const [bot1Name] = useState("StockfishBot");
-  const [bot2Name] = useState("AlphaClone");
+  const [matchup, setMatchup] = useState(getRandomMatchup());
   const [startTime] = useState(Date.now());
   const [showGameOver, setShowGameOver] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(false);
@@ -71,14 +92,14 @@ export default function LiveMatch() {
       if (currentGame.isGameOver()) {
         setMatchStatus("completed");
         if (currentGame.isCheckmate()) {
-          const winner = currentGame.turn() === "w" ? bot2Name : bot1Name;
+          const winner = currentGame.turn() === "w" ? matchup.bot2.name : matchup.bot1.name;
           setMatchResult(`${winner} wins by checkmate!`);
         } else {
           setMatchResult("Match ended in a draw!");
         }
         setShowGameOver(true);
         const duration = Math.floor((Date.now() - startTime) / 1000);
-        saveCompletedGame(bot1Name, bot2Name, currentGame.isCheckmate() ? (currentGame.turn() === "w" ? "black" : "white") : "draw", gameState.moveHistory, duration);
+        saveCompletedGame(matchup.bot1.name, matchup.bot2.name, currentGame.isCheckmate() ? (currentGame.turn() === "w" ? "black" : "white") : "draw", gameState.moveHistory, duration);
         toast.success("Match completed! Saved to history.");
         return;
       }
@@ -102,14 +123,14 @@ export default function LiveMatch() {
           if (currentGame.isGameOver()) {
             setMatchStatus("completed");
             if (currentGame.isCheckmate()) {
-              const winner = currentGame.turn() === "w" ? bot2Name : bot1Name;
+              const winner = currentGame.turn() === "w" ? matchup.bot2.name : matchup.bot1.name;
               setMatchResult(`${winner} wins by checkmate!`);
             } else {
               setMatchResult("Match ended in a draw!");
             }
             setShowGameOver(true);
             const duration = Math.floor((Date.now() - startTime) / 1000);
-            saveCompletedGame(bot1Name, bot2Name, currentGame.isCheckmate() ? (currentGame.turn() === "w" ? "black" : "white") : "draw", newState.moveHistory, duration);
+            saveCompletedGame(matchup.bot1.name, matchup.bot2.name, currentGame.isCheckmate() ? (currentGame.turn() === "w" ? "black" : "white") : "draw", newState.moveHistory, duration);
             toast.success("Match completed! Saved to history.");
           }
         }
@@ -118,7 +139,7 @@ export default function LiveMatch() {
 
     const interval = setInterval(makeBotMove, 1500);
     return () => clearInterval(interval);
-  }, [matchStatus, ttsEnabled]);
+  }, [matchStatus, ttsEnabled, matchup]);
 
   const startNewMatch = () => {
     const newGame = createChessGame();
@@ -130,28 +151,29 @@ export default function LiveMatch() {
     setMatchStatus("playing");
     setMatchResult("");
     setShowGameOver(false);
+    setMatchup(getRandomMatchup()); // Get new random matchup
     stop();
   };
 
   const board = gameState.board;
 
   return (
-    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter bg-gradient-to-br from-black via-gray-900 to-black">
+    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="luxury-heading text-4xl text-white mb-1">Live Match</h1>
-            <p className="text-gray-400 text-sm">{bot1Name} vs {bot2Name}</p>
+            <h1 className="luxury-heading text-4xl text-[#2C1810] mb-1">Live Match</h1>
+            <p className="text-[#5C4A3A] text-sm">{matchup.bot1.name} vs {matchup.bot2.name}</p>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 glass px-4 py-2 rounded-xl">
-              <Icon path={iconPaths.eye} size={16} className="text-gray-400" />
-              <span className="text-sm font-medium text-white">{viewers} watching</span>
+            <div className="flex items-center gap-2 neu-btn px-4 py-2 rounded-xl">
+              <Icon path={iconPaths.eye} size={16} className="text-[#8B7A6A]" />
+              <span className="text-sm font-medium text-[#2C1810]">{viewers} watching</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/20 border border-red-500/30">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/30">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse-soft" />
-              <span className="text-sm font-semibold text-red-400">LIVE</span>
+              <span className="text-sm font-semibold text-red-600">LIVE</span>
             </div>
           </div>
         </div>
@@ -159,26 +181,26 @@ export default function LiveMatch() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Board */}
           <div className="lg:col-span-2">
-            <div className="glass-strong rounded-3xl p-4 sm:p-6 shadow-2xl">
+            <div className="neu-raised rounded-3xl p-4 sm:p-6">
               {/* Bot 1 (White) */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl glass flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl neu-flat flex items-center justify-center">
                     <ChessPieces.King color="dark" size={20} />
                   </div>
                   <div>
-                    <div className="font-semibold text-white text-sm">{bot1Name}</div>
-                    <div className="text-xs text-gray-400">White • Hard AI</div>
+                    <div className="font-semibold text-[#2C1810] text-sm">{matchup.bot1.name}</div>
+                    <div className="text-xs text-[#8B7A6A]">White • {matchup.bot1.style} • {matchup.bot1.difficulty}</div>
                   </div>
                 </div>
-                <div className={`font-mono text-xl font-bold ${gameState.turn === "w" && matchStatus === "playing" ? "text-yellow-400" : "text-gray-500"}`}>
+                <div className={`font-mono text-xl font-bold ${gameState.turn === "w" && matchStatus === "playing" ? "text-[#8B6914]" : "text-[#8B7A6A]"}`}>
                   {Math.floor(whiteTime / 60)}:{(whiteTime % 60).toString().padStart(2, "0")}
                 </div>
               </div>
 
               {/* Chess board */}
               <div className="flex justify-center">
-                <div className="w-full max-w-lg aspect-square grid grid-cols-8 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10">
+                <div className="w-full max-w-lg aspect-square grid grid-cols-8 rounded-2xl overflow-hidden shadow-2xl border-2 border-[#c9c1b5]/50">
                   {Array.from({ length: 64 }, (_, i) => {
                     const row = Math.floor(i / 8);
                     const col = i % 8;
@@ -213,15 +235,15 @@ export default function LiveMatch() {
               {/* Bot 2 (Black) */}
               <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl glass flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl neu-flat flex items-center justify-center">
                     <ChessPieces.King color="light" size={20} />
                   </div>
                   <div>
-                    <div className="font-semibold text-white text-sm">{bot2Name}</div>
-                    <div className="text-xs text-gray-400">Black • Medium AI</div>
+                    <div className="font-semibold text-[#2C1810] text-sm">{matchup.bot2.name}</div>
+                    <div className="text-xs text-[#8B7A6A]">Black • {matchup.bot2.style} • {matchup.bot2.difficulty}</div>
                   </div>
                 </div>
-                <div className={`font-mono text-xl font-bold ${gameState.turn === "b" && matchStatus === "playing" ? "text-yellow-400" : "text-gray-500"}`}>
+                <div className={`font-mono text-xl font-bold ${gameState.turn === "b" && matchStatus === "playing" ? "text-[#8B6914]" : "text-[#8B7A6A]"}`}>
                   {Math.floor(blackTime / 60)}:{(blackTime % 60).toString().padStart(2, "0")}
                 </div>
               </div>
@@ -231,35 +253,35 @@ export default function LiveMatch() {
           {/* Side panel */}
           <div className="space-y-4">
             {/* Commentary */}
-            <div className="glass-strong rounded-3xl p-5 shadow-xl">
+            <div className="neu-raised rounded-3xl p-5">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Icon path={iconPaths.sparkle} size={16} className="text-yellow-400" />
-                  <span className="text-sm font-semibold text-white">AI Commentary</span>
+                  <Icon path={iconPaths.sparkle} size={16} className="text-[#8B6914]" />
+                  <span className="text-sm font-semibold text-[#2C1810]">AI Commentary</span>
                 </div>
-                <button onClick={() => { setTtsEnabled(!ttsEnabled); if (!ttsEnabled) stop(); }} className={`text-xs px-3 py-1 rounded-lg transition-all ${ttsEnabled ? "bg-yellow-500 text-black font-semibold" : "glass text-gray-300"}`}>
+                <button onClick={() => { setTtsEnabled(!ttsEnabled); if (!ttsEnabled) stop(); }} className={`text-xs px-3 py-1 rounded-lg transition-all ${ttsEnabled ? "bg-[#8B6914] text-white" : "neu-btn text-[#5C4A3A]"}`}>
                   {ttsEnabled ? "🔊 On" : "🔇 Off"}
                 </button>
               </div>
-              <p className="text-sm text-gray-300 leading-relaxed">{commentary}</p>
+              <p className="text-sm text-[#5C4A3A] leading-relaxed">{commentary}</p>
             </div>
 
             {/* Match status */}
-            <div className="glass-strong rounded-3xl p-5 shadow-xl">
-              <h3 className="text-sm font-semibold text-white mb-3">Match Status</h3>
+            <div className="neu-raised rounded-3xl p-5">
+              <h3 className="text-sm font-semibold text-[#2C1810] mb-3">Match Status</h3>
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">Status</span>
-                  <span className={`font-medium ${matchStatus === "playing" ? "text-green-400" : "text-yellow-400"}`}>
+                  <span className="text-[#5C4A3A]">Status</span>
+                  <span className={`font-medium ${matchStatus === "playing" ? "text-green-600" : "text-[#8B6914]"}`}>
                     {matchStatus === "playing" ? "In Progress" : "Completed"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">Moves</span>
-                  <span className="font-medium text-white">{gameState.moveHistory.length}</span>
+                  <span className="text-[#5C4A3A]">Moves</span>
+                  <span className="font-medium text-[#2C1810]">{gameState.moveHistory.length}</span>
                 </div>
                 {gameState.isCheck && (
-                  <div className="px-3 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-sm text-red-400 font-medium">
+                  <div className="px-3 py-2 bg-red-100 rounded-lg text-sm text-red-700 font-medium">
                     ⚠️ Check!
                   </div>
                 )}
@@ -267,15 +289,15 @@ export default function LiveMatch() {
             </div>
 
             {/* Move history */}
-            <div className="glass-strong rounded-3xl p-5 shadow-xl">
-              <h3 className="text-sm font-semibold text-white mb-3">Move History</h3>
+            <div className="neu-raised rounded-3xl p-5">
+              <h3 className="text-sm font-semibold text-[#2C1810] mb-3">Move History</h3>
               <div className="max-h-48 overflow-y-auto">
                 {gameState.moveHistory.length === 0 ? (
-                  <p className="text-xs text-gray-500">Match starting...</p>
+                  <p className="text-xs text-[#8B7A6A]">Match starting...</p>
                 ) : (
                   <div className="grid grid-cols-2 gap-1 text-xs">
                     {gameState.moveHistory.map((move, i) => (
-                      <div key={i} className={`px-2 py-1 rounded ${i % 2 === 0 ? "text-gray-200" : "text-gray-400"}`}>
+                      <div key={i} className={`px-2 py-1 rounded ${i % 2 === 0 ? "text-[#2C1810]" : "text-[#5C4A3A]"}`}>
                         {Math.floor(i / 2) + 1}{i % 2 === 0 ? "." : "..."} {move.san}
                       </div>
                     ))}
@@ -286,8 +308,9 @@ export default function LiveMatch() {
 
             {/* Controls */}
             {matchStatus === "completed" && (
-              <button onClick={startNewMatch} className="w-full py-3 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all">
-                Start New Match
+              <button onClick={startNewMatch} className="w-full py-3 bg-gradient-to-br from-[#8B6914] to-[#B8941C] text-white rounded-xl font-semibold inline-flex items-center justify-center gap-2">
+                <Icon path={iconPaths.refresh} size={18} />
+                New Match
               </button>
             )}
           </div>
@@ -296,14 +319,14 @@ export default function LiveMatch() {
         {/* Game over modal */}
         <AnimatePresence>
           {showGameOver && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="glass-strong rounded-3xl p-8 max-w-md w-full shadow-2xl text-center">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-[#E8E0D4] rounded-3xl p-8 max-w-md w-full neu-raised text-center">
                 <div className="text-5xl mb-4">🏆</div>
-                <h2 className="font-display text-3xl font-semibold text-white mb-2">Match Complete</h2>
-                <p className="text-gray-300 mb-6">{matchResult}</p>
+                <h2 className="font-display text-3xl font-semibold text-[#2C1810] mb-2">Match Complete</h2>
+                <p className="text-[#5C4A3A] mb-6">{matchResult}</p>
                 <div className="flex gap-3">
-                  <button onClick={startNewMatch} className="flex-1 py-3 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold shadow-lg">New Match</button>
-                  <button onClick={() => navigate("/analysis")} className="flex-1 py-3 glass rounded-xl font-medium text-white hover:bg-white/10 transition-all">View Analysis</button>
+                  <button onClick={startNewMatch} className="flex-1 py-3 bg-gradient-to-br from-[#8B6914] to-[#B8941C] text-white rounded-xl font-semibold">New Match</button>
+                  <button onClick={() => navigate("/analysis")} className="flex-1 py-3 neu-btn rounded-xl font-medium text-[#5C4A3A]">View Analysis</button>
                 </div>
               </motion.div>
             </motion.div>
