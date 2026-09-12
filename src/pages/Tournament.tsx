@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Chess } from "chess.js";
 import { ChessPieces } from "../ChessPieces";
 import { getBotMove, generateCommentary } from "../services/chessEngine";
+import { saveCompletedGame } from "../services/gameHistory";
 import { 
   createTournament, 
   advanceTournament, 
@@ -330,6 +331,21 @@ export default function TournamentPage() {
 
   const handleMatchComplete = (completedMatch: TournamentMatch) => {
     if (!selectedTournament) return;
+
+    // Save the game to history with full move details
+    if (completedMatch.bot1 && completedMatch.bot2 && completedMatch.moves.length > 0) {
+      const game = new Chess();
+      completedMatch.moves.forEach(move => game.move(move));
+      const verboseMoves = game.history({ verbose: true });
+      const duration = completedMatch.moves.length * 3;
+      saveCompletedGame(
+        completedMatch.bot1.name,
+        completedMatch.bot2.name,
+        completedMatch.result || 'draw',
+        verboseMoves,
+        duration
+      );
+    }
 
     const updatedRounds = selectedTournament.rounds.map((round, ri) => {
       if (ri === selectedTournament.currentRound - 1) {

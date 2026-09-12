@@ -47,6 +47,7 @@ export default function Analysis() {
   const [stats, setStats] = useState(getGameStats());
 
   useEffect(() => {
+    // Always fetch fresh data
     const history = getGameHistory();
     setGames(history);
     setStats(getGameStats());
@@ -54,6 +55,16 @@ export default function Analysis() {
       setSelectedGame(history[0]);
     }
   }, []);
+
+  // Refresh data when component mounts
+  const refreshData = () => {
+    const history = getGameHistory();
+    setGames(history);
+    setStats(getGameStats());
+    if (history.length > 0 && !selectedGame) {
+      setSelectedGame(history[0]);
+    }
+  };
 
   const moveQualityData = selectedGame ? [
     { name: "Excellent", value: selectedGame.analysis.moveQuality.excellent, color: "#22c55e" },
@@ -82,12 +93,12 @@ export default function Analysis() {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter bg-gradient-to-br from-black via-gray-900 to-black">
+    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="luxury-heading text-5xl text-white mb-1">Game Analysis</h1>
-            <p className="text-gray-400 text-base">Deep insights from your games</p>
+            <h1 className="luxury-heading text-5xl text-white mb-1">AI Dashboard</h1>
+            <p className="text-neutral-400 text-base">Deep insights and analytics from your games</p>
           </div>
           <button onClick={() => navigate("/")} className="glass px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition-all inline-flex items-center gap-2">
             <Icon path={iconPaths.arrow} size={16} className="rotate-180" />Back
