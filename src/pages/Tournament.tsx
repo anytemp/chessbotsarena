@@ -14,6 +14,7 @@ import {
   type TournamentMatch
 } from "../services/tournament";
 import { toast } from "../components/Toast";
+import LiveMatchViewer from "../components/LiveMatchViewer";
 
 const Icon = ({ path, size = 20, className = "" }: { path: string; size?: number; className?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -34,6 +35,7 @@ export default function TournamentPage() {
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+  const [currentMatch, setCurrentMatch] = useState<TournamentMatch | null>(null);
 
   useEffect(() => {
     const tournaments = getTournaments();
@@ -67,8 +69,20 @@ export default function TournamentPage() {
           match.status = 'playing';
           setSelectedTournament({ ...tournament });
           
-          // Play the match
-          await playTournamentMatch(match);
+          // Show live match viewer
+          setCurrentMatch(match);
+          
+          // Wait for match to complete (handled by LiveMatchViewer)
+          await new Promise<void>((resolve) => {
+            const checkComplete = setInterval(() => {
+              if (match.status === 'completed') {
+                clearInterval(checkComplete);
+                resolve();
+              }
+            }, 500);
+          });
+          
+          setCurrentMatch(null);
           setSelectedTournament({ ...tournament });
           
           // Small delay between matches
@@ -91,6 +105,15 @@ export default function TournamentPage() {
     
     if (tournament.winner) {
       toast.success(`🏆 ${tournament.winner.name} wins the tournament!`);
+    }
+  };
+
+  const handleMatchComplete = () => {
+    if (currentMatch) {
+      currentMatch.status = 'completed';
+      if (selectedTournament) {
+        setSelectedTournament({ ...selectedTournament });
+      }
     }
   };
 
@@ -183,7 +206,7 @@ export default function TournamentPage() {
                   {selectedTournament.bots.length} bots • Round {selectedTournament.currentRound} of {selectedTournament.rounds.length}
                 </div>
               </div>
-              {selectedTournament.status !== 'completed' && (
+              {selectedTournament.status !== 'completed' && !currentMatch && (
                 <button
                   onClick={() => handleRunTournament(selectedTournament)}
                   disabled={isRunning}
@@ -194,6 +217,20 @@ export default function TournamentPage() {
                 </button>
               )}
             </div>
+
+            {/* Live Match Viewer */}
+            <AnimatePresence>
+              {currentMatch && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="mb-8"
+                >
+                  <LiveMatchViewer match={currentMatch} onComplete={handleMatchComplete} />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Stats */}
             {stats && (

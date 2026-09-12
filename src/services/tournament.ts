@@ -165,6 +165,72 @@ export async function playTournamentMatch(match: TournamentMatch): Promise<Tourn
   return match;
 }
 
+// Play match with live updates (for LiveMatchViewer)
+export function playMatchLive(
+  match: TournamentMatch,
+  onMove: (game: Chess) => void,
+  onComplete: (result: 'white' | 'black' | 'draw', winner: TournamentBot | null) => void
+): () => void {
+  if (!match.bot1 || !match.bot2) {
+    onComplete('draw', null);
+    return () => {};
+  }
+  
+  const bot1 = match.bot1;
+  const bot2 = match.bot2;
+  
+  const game = new Chess();
+  const maxMoves = 100;
+  let moveCount = 0;
+  let stopped = false;
+  
+  const playNextMove = () => {
+    if (stopped || game.isGameOver() || moveCount >= maxMoves) {
+      // Determine winner
+      let result: 'white' | 'black' | 'draw' = 'draw';
+      let winner: TournamentBot | null = null;
+      
+      if (game.isCheckmate()) {
+        result = game.turn() === 'w' ? 'black' : 'white';
+        winner = game.turn() === 'w' ? bot2 : bot1;
+      }
+      
+      match.result = result;
+      match.winner = winner;
+      match.status = 'completed';
+      
+      // Save to game history
+      const duration = match.moves.length * 2;
+      saveCompletedGame(bot1.name, bot2.name, result, 
+        match.moves.map(san => ({ san } as any)), duration);
+      
+      onComplete(result, winner);
+      return;
+    }
+    
+    const botMove = getBotMove(game, 'medium');
+    if (botMove) {
+      const move = game.move({ from: botMove.from, to: botMove.to, promotion: botMove.promotion });
+      if (move) {
+        match.moves.push(move.san);
+      }
+    }
+    moveCount++;
+    
+    onMove(game);
+    
+    setTimeout(playNextMove, 2000);
+  };
+  
+  // Start playing
+  setTimeout(playNextMove, 1000);
+  
+  // Return stop function
+  return () => {
+    stopped = true;
+  };
+}
+
 export async function advanceTournament(tournament: Tournament): Promise<Tournament> {
   const currentRoundMatches = tournament.rounds[tournament.currentRound - 1];
   
