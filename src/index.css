@@ -158,4 +158,16 @@
   }
   .connection-dot.online { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
   .connection-dot.offline { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+
+  /* Dark glass morphism for Live Match and Analysis */
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
 }

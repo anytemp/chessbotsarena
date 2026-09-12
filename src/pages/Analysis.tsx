@@ -45,12 +45,12 @@ export default function Analysis() {
 
   if (games.length === 0) {
     return (
-      <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter">
+      <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter bg-gradient-to-br from-black via-gray-900 to-black">
         <div className="max-w-4xl mx-auto text-center py-20">
           <div className="text-6xl mb-6">📊</div>
-          <h1 className="font-display text-4xl text-[#2C1810] mb-4">No Games Yet</h1>
-          <p className="text-[#5C4A3A] mb-8">Play some games to see analysis and insights</p>
-          <button onClick={() => navigate("/play")} className="neu-accent px-8 py-4 rounded-2xl font-semibold inline-flex items-center gap-2">
+          <h1 className="font-display text-4xl text-white mb-4">No Games Yet</h1>
+          <p className="text-gray-400 mb-8">Play some games to see analysis and insights</p>
+          <button onClick={() => navigate("/play")} className="px-8 py-4 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2">
             <Icon path={iconPaths.sparkle} size={18} />
             Start Playing
           </button>
@@ -60,14 +60,14 @@ export default function Analysis() {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter">
+    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter bg-gradient-to-br from-black via-gray-900 to-black">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="luxury-heading text-4xl text-[#2C1810] mb-1">Game Analysis</h1>
-            <p className="text-[#5C4A3A] text-sm">Deep insights from your games</p>
+            <h1 className="luxury-heading text-4xl text-white mb-1">Game Analysis</h1>
+            <p className="text-gray-400 text-sm">Deep insights from your games</p>
           </div>
-          <button onClick={() => navigate("/")} className="neu-btn px-4 py-2 rounded-xl text-sm font-medium text-[#5C4A3A] inline-flex items-center gap-2">
+          <button onClick={() => navigate("/")} className="glass px-4 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition-all inline-flex items-center gap-2">
             <Icon path={iconPaths.arrow} size={16} className="rotate-180" />Back
           </button>
         </div>
@@ -86,10 +86,10 @@ export default function Analysis() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="neu-raised rounded-2xl p-4 text-center"
+              className="glass-strong rounded-2xl p-4 text-center shadow-xl"
             >
-              <div className="font-display text-3xl font-bold text-[#8B6914] mb-1">{stat.value}</div>
-              <div className="text-xs text-[#5C4A3A]">{stat.label}</div>
+              <div className="font-display text-3xl font-bold text-yellow-400 mb-1">{stat.value}</div>
+              <div className="text-xs text-gray-400">{stat.label}</div>
             </motion.div>
           ))}
         </div>
@@ -97,22 +97,22 @@ export default function Analysis() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Game list */}
           <div className="lg:col-span-1">
-            <div className="neu-raised rounded-3xl p-5">
-              <h3 className="text-sm font-semibold text-[#2C1810] mb-4">Recent Games</h3>
+            <div className="glass-strong rounded-3xl p-5 shadow-xl">
+              <h3 className="text-sm font-semibold text-white mb-4">Recent Games</h3>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {games.map((game, i) => (
                   <button
                     key={game.id}
                     onClick={() => setSelectedGame(game)}
                     className={`w-full text-left p-3 rounded-xl transition-all ${
-                      selectedGame?.id === game.id ? "neu-pressed" : "hover:bg-[#D4CFC5]/50"
+                      selectedGame?.id === game.id ? "glass-strong" : "hover:bg-white/5"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-medium text-[#2C1810]">{game.whitePlayer} vs {game.blackPlayer}</span>
+                      <span className="text-xs font-medium text-white">{game.whitePlayer} vs {game.blackPlayer}</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-[#8B7A6A]">
-                      <span className={`font-medium ${game.result === "white" ? "text-green-600" : game.result === "black" ? "text-red-600" : "text-yellow-600"}`}>
+                    <div className="flex items-center justify-between text-xs text-gray-400">
+                      <span className={`font-medium ${game.result === "white" ? "text-green-400" : game.result === "black" ? "text-red-400" : "text-yellow-400"}`}>
                         {game.result === "white" ? "White wins" : game.result === "black" ? "Black wins" : "Draw"}
                       </span>
                       <span>{game.moveCount} moves</span>
@@ -128,8 +128,8 @@ export default function Analysis() {
             {selectedGame && (
               <>
                 {/* Move quality chart */}
-                <div className="neu-raised rounded-3xl p-6">
-                  <h3 className="text-lg font-semibold text-[#2C1810] mb-4">Move Quality Distribution</h3>
+                <div className="glass-strong rounded-3xl p-6 shadow-xl">
+                  <h3 className="text-lg font-semibold text-white mb-4">Move Quality Distribution</h3>
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div className="h-48">
                       <ResponsiveContainer width="100%" height="100%">
@@ -156,9 +156,9 @@ export default function Analysis() {
                         <div key={item.name} className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                            <span className="text-sm text-[#5C4A3A]">{item.name}</span>
+                            <span className="text-sm text-gray-300">{item.name}</span>
                           </div>
-                          <span className="text-sm font-medium text-[#2C1810]">{item.value}%</span>
+                          <span className="text-sm font-medium text-white">{item.value}%</span>
                         </div>
                       ))}
                     </div>
@@ -166,40 +166,40 @@ export default function Analysis() {
                 </div>
 
                 {/* Game stats */}
-                <div className="neu-raised rounded-3xl p-6">
-                  <h3 className="text-lg font-semibold text-[#2C1810] mb-4">Game Statistics</h3>
+                <div className="glass-strong rounded-3xl p-6 shadow-xl">
+                  <h3 className="text-lg font-semibold text-white mb-4">Game Statistics</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div className="text-center">
-                      <div className="font-display text-2xl font-bold text-[#8B6914]">{selectedGame.analysis.captures}</div>
-                      <div className="text-xs text-[#5C4A3A]">Captures</div>
+                      <div className="font-display text-2xl font-bold text-yellow-400">{selectedGame.analysis.captures}</div>
+                      <div className="text-xs text-gray-400">Captures</div>
                     </div>
                     <div className="text-center">
-                      <div className="font-display text-2xl font-bold text-[#8B6914]">{selectedGame.analysis.checks}</div>
-                      <div className="text-xs text-[#5C4A3A]">Checks</div>
+                      <div className="font-display text-2xl font-bold text-yellow-400">{selectedGame.analysis.checks}</div>
+                      <div className="text-xs text-gray-400">Checks</div>
                     </div>
                     <div className="text-center">
-                      <div className="font-display text-2xl font-bold text-[#8B6914]">{selectedGame.analysis.castles}</div>
-                      <div className="text-xs text-[#5C4A3A]">Castles</div>
+                      <div className="font-display text-2xl font-bold text-yellow-400">{selectedGame.analysis.castles}</div>
+                      <div className="text-xs text-gray-400">Castles</div>
                     </div>
                     <div className="text-center">
-                      <div className="font-display text-2xl font-bold text-[#8B6914]">{selectedGame.analysis.promotions}</div>
-                      <div className="text-xs text-[#5C4A3A]">Promotions</div>
+                      <div className="font-display text-2xl font-bold text-yellow-400">{selectedGame.analysis.promotions}</div>
+                      <div className="text-xs text-gray-400">Promotions</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Critical moments */}
                 {selectedGame.analysis.criticalMoments.length > 0 && (
-                  <div className="neu-raised rounded-3xl p-6">
-                    <h3 className="text-lg font-semibold text-[#2C1810] mb-4">Critical Moments</h3>
+                  <div className="glass-strong rounded-3xl p-6 shadow-xl">
+                    <h3 className="text-lg font-semibold text-white mb-4">Critical Moments</h3>
                     <div className="space-y-3">
                       {selectedGame.analysis.criticalMoments.map((moment, i) => (
-                        <div key={i} className="p-3 rounded-xl bg-red-50 border border-red-200">
+                        <div key={i} className="p-3 rounded-xl bg-red-500/10 border border-red-500/30">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-sm font-medium text-[#2C1810]">Move {moment.move}: {moment.played}</span>
-                            <span className="text-xs text-red-600">Eval: {moment.eval}</span>
+                            <span className="text-sm font-medium text-white">Move {moment.move}: {moment.played}</span>
+                            <span className="text-xs text-red-400">Eval: {moment.eval}</span>
                           </div>
-                          <p className="text-xs text-[#5C4A3A]">{moment.explanation}</p>
+                          <p className="text-xs text-gray-300">{moment.explanation}</p>
                         </div>
                       ))}
                     </div>
