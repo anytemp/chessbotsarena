@@ -54,19 +54,19 @@ export function speak(text: string, options?: {
   // Cancel any ongoing speech
   stop();
   
-  // Small delay to ensure previous speech is cancelled
+  // Wait a bit for cancellation to complete
   setTimeout(() => {
+    // Ensure voices are loaded
+    if (!voicesLoaded || availableVoices.length === 0) {
+      availableVoices = window.speechSynthesis.getVoices();
+      voicesLoaded = availableVoices.length > 0;
+    }
+    
     const utterance = new SpeechSynthesisUtterance(text);
     
     utterance.rate = options?.rate || 1.0;
     utterance.pitch = options?.pitch || 1.0;
     utterance.volume = options?.volume || 0.8;
-    
-    // Get voices if not loaded yet
-    if (!voicesLoaded) {
-      availableVoices = window.speechSynthesis.getVoices();
-      voicesLoaded = availableVoices.length > 0;
-    }
     
     // Select voice
     if (options?.voice) {
@@ -87,6 +87,7 @@ export function speak(text: string, options?: {
     
     utterance.onstart = () => {
       isSpeaking = true;
+      currentUtterance = utterance;
       console.log('TTS started:', text);
     };
     
@@ -109,8 +110,10 @@ export function speak(text: string, options?: {
       console.log('Speaking:', text);
     } catch (error) {
       console.error('Failed to speak:', error);
+      isSpeaking = false;
+      currentUtterance = null;
     }
-  }, 100);
+  }, 150);
 }
 
 // Stop speaking

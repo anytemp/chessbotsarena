@@ -34,6 +34,7 @@ export default function TournamentPage() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [currentMatch, setCurrentMatch] = useState<TournamentMatch | null>(null);
 
@@ -54,6 +55,33 @@ export default function TournamentPage() {
     setSelectedTournament(tournament);
     setShowCreateModal(false);
     toast.success("Tournament created!");
+  };
+
+  const handleEditTournament = (tournament: Tournament, bots: TournamentBot[]) => {
+    if (bots.length < 2) {
+      toast.error("Need at least 2 bots in tournament");
+      return;
+    }
+
+    // Update tournament with new bots
+    tournament.bots = bots;
+    
+    // Regenerate bracket with new bots
+    const updatedTournament = createTournament(tournament.name, bots);
+    updatedTournament.id = tournament.id; // Keep same ID
+    updatedTournament.createdAt = tournament.createdAt;
+    
+    saveTournament(updatedTournament);
+    
+    // Update state
+    const updatedTournaments = tournaments.map(t => 
+      t.id === tournament.id ? updatedTournament : t
+    );
+    setTournaments(updatedTournaments);
+    setSelectedTournament(updatedTournament);
+    setShowEditModal(false);
+    
+    toast.success("Tournament updated!");
   };
 
   const handleRunTournament = async (tournament: Tournament) => {
@@ -207,14 +235,23 @@ export default function TournamentPage() {
                 </div>
               </div>
               {selectedTournament.status !== 'completed' && !currentMatch && (
-                <button
-                  onClick={() => handleRunTournament(selectedTournament)}
-                  disabled={isRunning}
-                  className="neu-accent px-6 py-3 rounded-xl font-semibold inline-flex items-center gap-2 disabled:opacity-50"
-                >
-                  <Icon path={iconPaths.play} size={20} />
-                  {isRunning ? 'Running...' : 'Run Tournament'}
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="neu-btn px-6 py-3 rounded-xl font-semibold inline-flex items-center gap-2"
+                  >
+                    <Icon path="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" size={20} />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleRunTournament(selectedTournament)}
+                    disabled={isRunning}
+                    className="neu-accent px-6 py-3 rounded-xl font-semibold inline-flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <Icon path={iconPaths.play} size={20} />
+                    {isRunning ? 'Running...' : 'Run Tournament'}
+                  </button>
+                </div>
               )}
             </div>
 
@@ -304,6 +341,17 @@ export default function TournamentPage() {
             <CreateTournamentModal
               onClose={() => setShowCreateModal(false)}
               onCreate={handleCreateTournament}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Edit Tournament Modal */}
+        <AnimatePresence>
+          {showEditModal && selectedTournament && (
+            <EditTournamentModal
+              tournament={selectedTournament}
+              onClose={() => setShowEditModal(false)}
+              onSave={handleEditTournament}
             />
           )}
         </AnimatePresence>
@@ -500,6 +548,125 @@ function CreateTournamentModal({
             className="flex-1 py-3 bg-[#8B6914] text-white rounded-xl font-semibold hover:bg-[#7a5a10] transition-colors"
           >
             Create Tournament
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function EditTournamentModal({ 
+  tournament, 
+  onClose, 
+  onSave 
+}: { 
+  tournament: Tournament;
+  onClose: () => void;
+  onSave: (tournament: Tournament, bots: TournamentBot[]) => void;
+}) {
+  const [selectedBots, setSelectedBots] = useState<TournamentBot[]>(tournament.bots);
+  const [availableBots, setAvailableBots] = useState<TournamentBot[]>([]);
+
+  useEffect(() => {
+    const savedBots = localStorage.getItem('chessbots');
+    if (savedBots) {
+      const bots = JSON.parse(savedBots).map((bot: any) => ({
+        id: bot.id,
+        name: bot.name,
+        filename: bot.filename,
+        description: bot.description || '',
+        difficulty: 'medium' as const,
+      }));
+      setAvailableBots(bots);
+    }
+  }, []);
+
+  const toggleBot = (bot: TournamentBot) => {
+    if (selectedBots.find(b => b.id === bot.id)) {
+      setSelectedBots(selectedBots.filter(b => b.id !== bot.id));
+    } else {
+      setSelectedBots([...selectedBots, bot]);
+    }
+  };
+
+  const handleSave = () => {
+    if (selectedBots.length < 2) {
+      toast.error("Need at least 2 bots in tournament");
+      return;
+    }
+    onSave(tournament, selectedBots);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-[#E8E0D4] rounded-3xl p-8 max-w-2xl w-full neu-raised max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="font-display text-3xl font-semibold text-[#2C1810] mb-2">
+          Edit Tournament
+        </h3>
+        <p className="text-sm text-[#5C4A3A] mb-6">{tournament.name}</p>
+
+        <div className="space-y-6">
+          <div>
+            <label className="text-sm font-medium text-[#5C4A3A] mb-2 block">
+              Select Bots ({selectedBots.length} selected)
+            </label>
+            {availableBots.length === 0 ? (
+              <div className="text-center py-8 text-[#8B7A6A]">
+                No bots uploaded yet. Go to Bot Arena to upload bots first.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
+                {availableBots.map(bot => (
+                  <div
+                    key={bot.id}
+                    onClick={() => toggleBot(bot)}
+                    className={`p-3 rounded-xl cursor-pointer transition-all ${
+                      selectedBots.find(b => b.id === bot.id)
+                        ? 'neu-accent text-white'
+                        : 'neu-pressed text-[#2C1810] hover:scale-105'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <ChessPieces.Knight color={selectedBots.find(b => b.id === bot.id) ? 'light' : 'dark'} size={20} />
+                      <div className="flex-1">
+                        <div className="font-semibold text-sm">{bot.name}</div>
+                        <div className="text-xs opacity-70">{bot.filename}</div>
+                      </div>
+                      {selectedBots.find(b => b.id === bot.id) && (
+                        <span className="text-lg">✓</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex gap-3 mt-8">
+          <button
+            onClick={onClose}
+            className="flex-1 py-3 neu-btn rounded-xl font-medium text-[#5C4A3A]"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className="flex-1 py-3 bg-[#8B6914] text-white rounded-xl font-semibold hover:bg-[#7a5a10] transition-colors"
+          >
+            Save Changes
           </button>
         </div>
       </motion.div>

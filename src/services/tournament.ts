@@ -168,25 +168,29 @@ export async function playTournamentMatch(match: TournamentMatch): Promise<Tourn
 // Play match with live updates (for LiveMatchViewer)
 export function playMatchLive(
   match: TournamentMatch,
-  onMove: (game: Chess) => void,
-  onComplete: (result: 'white' | 'black' | 'draw', winner: TournamentBot | null) => void
+  onMove: (fen: string, moves: string[]) => void,
+  onComplete: (result: 'white' | 'black' | 'draw', winner: TournamentBot | null, moves: string[]) => void
 ): () => void {
   if (!match.bot1 || !match.bot2) {
-    onComplete('draw', null);
+    onComplete('draw', null, []);
     return () => {};
   }
   
   const bot1 = match.bot1;
   const bot2 = match.bot2;
   
-  const game = new Chess();
-  const maxMoves = 100;
+  // Create game instance and keep it in closure
+  let game = new Chess();
+  const maxMoves = 200; // Increased from 100
   let moveCount = 0;
   let stopped = false;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
   
   const playNextMove = () => {
-    if (stopped || game.isGameOver() || moveCount >= maxMoves) {
-      // Determine winner
+    if (stopped) return;
+    
+    // Check game over conditions
+    if (game.isGameOver() || moveCount >= maxMoves) {
       let result: 'white' | 'black' | 'draw' = 'draw';
       let winner: TournamentBot | null = null;
       
@@ -204,30 +208,40 @@ export function playMatchLive(
       saveCompletedGame(bot1.name, bot2.name, result, 
         match.moves.map(san => ({ san } as any)), duration);
       
-      onComplete(result, winner);
+      onComplete(result, winner, [...match.moves]);
       return;
     }
     
+    // Get bot move
     const botMove = getBotMove(game, 'medium');
     if (botMove) {
-      const move = game.move({ from: botMove.from, to: botMove.to, promotion: botMove.promotion });
-      if (move) {
-        match.moves.push(move.san);
+      try {
+        const move = game.move({ from: botMove.from, to: botMove.to, promotion: botMove.promotion });
+        if (move) {
+          match.moves.push(move.san);
+          moveCount++;
+          
+          // Notify with current state
+          onMove(game.fen(), [...match.moves]);
+        }
+      } catch (error) {
+        console.error('Move failed:', error);
       }
     }
-    moveCount++;
     
-    onMove(game);
-    
-    setTimeout(playNextMove, 2000);
+    // Schedule next move
+    timeoutId = setTimeout(playNextMove, 2000);
   };
   
-  // Start playing
-  setTimeout(playNextMove, 1000);
+  // Start playing after initial delay
+  timeoutId = setTimeout(playNextMove, 1000);
   
   // Return stop function
   return () => {
     stopped = true;
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
   };
 }
 

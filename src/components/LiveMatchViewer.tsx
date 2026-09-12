@@ -52,31 +52,35 @@ export default function LiveMatchViewer({ match, onComplete }: LiveMatchViewerPr
 
     const stopMatch = playMatchLive(
       match,
-      (updatedGame) => {
-        // Update game state on each move
-        const newGame = new Chess(updatedGame.fen());
+      (fen, moves) => {
+        // Create game from FEN
+        const newGame = new Chess(fen);
         setGame(newGame);
         
         // Generate commentary for the last move
-        const history = updatedGame.history({ verbose: true });
-        if (history.length > 0) {
+        if (moves.length > 0) {
+          const lastMoveSan = moves[moves.length - 1];
+          const history = newGame.history({ verbose: true });
           const lastMove = history[history.length - 1];
-          const comment = generateCommentary(lastMove, {
-            board: updatedGame.board().map(row => row.map(cell => cell ? `${cell.color}${cell.type}` : null)),
-            turn: updatedGame.turn(),
-            isCheck: updatedGame.isCheck(),
-            isCheckmate: updatedGame.isCheckmate(),
-            isDraw: updatedGame.isDraw(),
-            isGameOver: updatedGame.isGameOver(),
-            moveHistory: history,
-            fen: updatedGame.fen(),
-          }, history.slice(0, -1));
           
-          setCommentary(comment);
-          
-          // Text-to-speech
-          if (ttsEnabled && isTTSAvailable()) {
-            speak(comment);
+          if (lastMove) {
+            const comment = generateCommentary(lastMove, {
+              board: newGame.board().map((row: any) => row.map((cell: any) => cell ? `${cell.color}${cell.type}` : null)),
+              turn: newGame.turn(),
+              isCheck: newGame.isCheck(),
+              isCheckmate: newGame.isCheckmate(),
+              isDraw: newGame.isDraw(),
+              isGameOver: newGame.isGameOver(),
+              moveHistory: history,
+              fen: newGame.fen(),
+            }, history.slice(0, -1));
+            
+            setCommentary(comment);
+            
+            // Text-to-speech
+            if (ttsEnabled && isTTSAvailable()) {
+              speak(comment);
+            }
           }
         }
       },
