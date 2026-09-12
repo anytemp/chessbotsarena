@@ -7,6 +7,7 @@ import { getGameStats } from "./services/gameHistory";
 import HumanGame from "./pages/HumanGame";
 import LiveMatch from "./pages/LiveMatch";
 import Analysis from "./pages/Analysis";
+import TournamentPage from "./pages/Tournament";
 import ToastContainer, { toast } from "./components/Toast";
 
 // ─── ICONS ──────────────────────────────────────────────────────────────────
@@ -448,54 +449,7 @@ function Play() {
   );
 }
 
-// ─── TOURNAMENTS PAGE ───────────────────────────────────────────────────────
-function Tournaments() {
-  const navigate = useNavigate();
 
-  const tournaments = [
-    { id: 1, name: "Weekly Blitz Championship", description: "Fast-paced blitz tournament", format: "KNOCKOUT", participant_limit: 16, status: "RUNNING" },
-    { id: 2, name: "Monthly Rapid Open", description: "Open tournament for all levels", format: "SWISS", participant_limit: 32, status: "REGISTRATION_OPEN" },
-    { id: 3, name: "Grand Prix Series - Round 3", description: "Third round of the Grand Prix", format: "ROUND_ROBIN", participant_limit: 8, status: "REGISTRATION_OPEN" },
-  ];
-
-  return (
-    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6 page-enter">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-12">
-          <div>
-            <h1 className="luxury-heading text-5xl text-[#2C1810] mb-2">Tournaments</h1>
-            <p className="text-[#5C4A3A]">Compete in automated tournaments</p>
-          </div>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tournaments.map((t, i) => (
-            <motion.div key={t.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="neu-raised rounded-3xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-2xl neu-flat flex items-center justify-center"><Icon path={iconPaths.trophy} size={22} className="text-[#8B6914]" /></div>
-                <span className={`text-xs font-bold px-3 py-1 rounded-full ${t.status === "RUNNING" ? "bg-[#6B7F5E]/20 text-[#6B7F5E]" : t.status === "REGISTRATION_OPEN" ? "bg-[#8B6914]/20 text-[#8B6914]" : "bg-[#8B7A6A]/20 text-[#8B7A6A]"}`}>
-                  {t.status.replace("_", " ")}
-                </span>
-              </div>
-              <h3 className="font-display text-xl font-semibold text-[#2C1810] mb-2">{t.name}</h3>
-              {t.description && <p className="text-sm text-[#5C4A3A] mb-3">{t.description}</p>}
-              <div className="flex items-center justify-between pt-4 border-t border-[#c9c1b5]/30 mb-4">
-                <div><div className="text-xs text-[#8B7A6A]">Format</div><div className="text-sm font-bold text-[#2C1810]">{t.format}</div></div>
-                <div className="text-right"><div className="text-xs text-[#8B7A6A]">Limit</div><div className="text-sm font-bold text-[#2C1810]">{t.participant_limit}</div></div>
-              </div>
-              {t.status === "RUNNING" && <button onClick={() => navigate("/live")} className="w-full py-2 bg-[#6B7F5E] text-white rounded-xl text-sm font-semibold hover:bg-[#5a6d50] transition-colors">Watch Live</button>}
-              {t.status === "REGISTRATION_OPEN" && <button onClick={() => toast.success("Registered for tournament!")} className="w-full py-2 bg-[#8B6914] text-white rounded-xl text-sm font-semibold hover:bg-[#7a5a10] transition-colors">Register Bot</button>}
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <button onClick={() => navigate("/")} className="neu-btn px-6 py-3 rounded-xl font-medium text-[#5C4A3A] inline-flex items-center gap-2"><Icon path={iconPaths.arrow} size={16} className="rotate-180" />Back to home</button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ─── BOT ARENA PAGE ─────────────────────────────────────────────────────────
 function BotArena() {
@@ -608,7 +562,7 @@ export default function App() {
           <Route path="/live" element={<LiveMatch />} />
           <Route path="/play" element={<Play />} />
           <Route path="/play/human" element={<HumanGame />} />
-          <Route path="/tournaments" element={<Tournaments />} />
+          <Route path="/tournaments" element={<TournamentPage />} />
           <Route path="/analysis" element={<Analysis />} />
           <Route path="/arena" element={<BotArena />} />
         </Routes>

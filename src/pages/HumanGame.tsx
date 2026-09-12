@@ -6,6 +6,7 @@ import { createChessGame, getGameState, makeMove, generateCommentary, type GameS
 import { saveCompletedGame } from "../services/gameHistory";
 import { getCurrentUser } from "../services/auth";
 import { toast } from "../components/Toast";
+import { speak, stop, isTTSAvailable } from "../services/tts";
 
 const Icon = ({ path, size = 20, className = "" }: { path: string; size?: number; className?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -29,6 +30,7 @@ export default function HumanGame() {
   const [startTime] = useState(Date.now());
   const [showGameOver, setShowGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
+  const [ttsEnabled, setTtsEnabled] = useState(false);
 
   // Timer
   useEffect(() => {
@@ -113,6 +115,11 @@ export default function HumanGame() {
         const comment = generateCommentary(move, newState, newState.moveHistory.slice(0, -1));
         setCommentary(comment);
         
+        // Text-to-speech
+        if (ttsEnabled && isTTSAvailable()) {
+          speak(comment);
+        }
+        
         setSelectedSquare(null);
       } else {
         // Invalid move
@@ -124,7 +131,12 @@ export default function HumanGame() {
   const renderPiece = (piece: string | null) => {
     if (!piece) return null;
     const color = piece[0] === 'w' ? 'light' : 'dark';
-    const type = piece[1].toUpperCase() + piece.slice(2);
+    const typeChar = piece[1];
+    const typeMap: Record<string, string> = {
+      p: 'Pawn', n: 'Knight', b: 'Bishop', r: 'Rook', q: 'Queen', k: 'King'
+    };
+    const type = typeMap[typeChar];
+    if (!type) return null;
     const PieceComponent = ChessPieces[type as keyof typeof ChessPieces];
     if (!PieceComponent) return null;
     return <PieceComponent color={color as "dark" | "light"} size={40} />;
@@ -251,9 +263,28 @@ export default function HumanGame() {
           {/* Sidebar - AI Commentary */}
           <div className="space-y-4">
             <motion.div key={commentary} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/10 backdrop-blur-xl rounded-3xl p-5 border border-white/20">
-              <div className="flex items-center gap-2 mb-3">
-                <Icon path={iconPaths.sparkle} size={16} className="text-cyan-400" />
-                <span className="text-sm font-bold text-cyan-400 uppercase">AI Commentary</span>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Icon path={iconPaths.sparkle} size={16} className="text-cyan-400" />
+                  <span className="text-sm font-bold text-cyan-400 uppercase">AI Commentary</span>
+                </div>
+                {isTTSAvailable() && (
+                  <button
+                    onClick={() => {
+                      if (ttsEnabled) {
+                        stop();
+                      }
+                      setTtsEnabled(!ttsEnabled);
+                    }}
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                      ttsEnabled 
+                        ? 'bg-cyan-500 text-white' 
+                        : 'bg-white/10 text-white/70 hover:bg-white/20'
+                    }`}
+                  >
+                    🔊 {ttsEnabled ? 'ON' : 'OFF'}
+                  </button>
+                )}
               </div>
               <p className="text-sm text-white leading-relaxed">{commentary}</p>
             </motion.div>
