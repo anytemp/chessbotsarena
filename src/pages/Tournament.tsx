@@ -31,15 +31,17 @@ const iconPaths = {
   plus: "M12 5v14M5 12h14",
   trash: "M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
   sparkle: "M12 3v18M3 12h18",
+  eye: "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z",
 };
 
-// Live Match Viewer Component
+// Live Tournament Match Viewer Component
 function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; onComplete: (result: TournamentMatch) => void }) {
   const [game, setGame] = useState(new Chess());
   const [commentary, setCommentary] = useState("Match starting...");
   const [whiteTime, setWhiteTime] = useState(600);
   const [blackTime, setBlackTime] = useState(600);
   const [isComplete, setIsComplete] = useState(false);
+  const [moveCount, setMoveCount] = useState(0);
 
   useEffect(() => {
     if (isComplete) return;
@@ -58,12 +60,12 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
 
     let cancelled = false;
     const currentGame = new Chess();
-    let moveCount = 0;
+    let moves = 0;
     const maxMoves = 100;
 
     const makeNextMove = () => {
       if (cancelled) return;
-      if (currentGame.isGameOver() || moveCount >= maxMoves) {
+      if (currentGame.isGameOver() || moves >= maxMoves) {
         setIsComplete(true);
         let winner: TournamentBot | null = null;
         let result: 'white' | 'black' | 'draw' | null = null;
@@ -71,9 +73,11 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
         if (currentGame.isCheckmate()) {
           winner = currentGame.turn() === "w" ? match.bot2! : match.bot1!;
           result = currentGame.turn() === "w" ? "black" : "white";
+          setCommentary(`Checkmate! ${winner.name} wins!`);
         } else {
           winner = Math.random() > 0.5 ? match.bot1! : match.bot2!;
           result = "draw";
+          setCommentary(`Game drawn. ${winner.name} advances.`);
         }
 
         const completedMatch: TournamentMatch = {
@@ -84,7 +88,7 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
           result,
         };
 
-        setTimeout(() => onComplete(completedMatch), 2000);
+        setTimeout(() => onComplete(completedMatch), 3000);
         return;
       }
 
@@ -93,7 +97,8 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
       if (botMove) {
         const move = currentGame.move({ from: botMove.from, to: botMove.to, promotion: botMove.promotion });
         if (move) {
-          moveCount++;
+          moves++;
+          setMoveCount(moves);
           setGame(new Chess(currentGame.fen()));
           const gameState = {
             isCheckmate: currentGame.isCheckmate(),
@@ -121,94 +126,151 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
 
   return (
     <div className="glass-strong rounded-3xl p-6 shadow-2xl">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">LIVE</span>
-          <span className="text-sm text-gray-400">Tournament Match</span>
-        </div>
-      </div>
-
-      {/* Players */}
-      <div className="flex items-center justify-between mb-4">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl glass flex items-center justify-center">
-            <ChessPieces.King color="dark" size={20} />
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/20 border border-red-500/30 rounded-lg">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span className="text-sm font-bold text-red-400">LIVE</span>
           </div>
-          <div>
-            <div className="font-semibold text-white text-sm">{match.bot1?.name}</div>
-            <div className="text-xs text-gray-400">White • {match.bot1?.difficulty}</div>
-          </div>
+          <span className="text-base text-gray-300 font-medium">Tournament Match • Round {match.round}</span>
         </div>
-        <div className={`font-mono text-lg font-bold ${game.turn() === "w" && !isComplete ? "text-yellow-400" : "text-gray-500"}`}>
-          {Math.floor(whiteTime / 60)}:{(whiteTime % 60).toString().padStart(2, "0")}
+        <div className="flex items-center gap-2 glass px-3 py-1.5 rounded-lg">
+          <Icon path={iconPaths.eye} size={16} className="text-gray-400" />
+          <span className="text-sm text-gray-300">{Math.floor(Math.random() * 30) + 10} watching</span>
         </div>
       </div>
 
-      {/* Board */}
-      <div className="flex justify-center mb-4">
-        <div className="w-full max-w-md aspect-square grid grid-cols-8 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10">
-          {Array.from({ length: 64 }, (_, i) => {
-            const row = Math.floor(i / 8);
-            const col = i % 8;
-            const isLight = (row + col) % 2 === 0;
-            const pieceData = board[row][col];
-            const lastMove = game.history({ verbose: true }).slice(-1)[0];
-            const square = `${"abcdefgh"[col]}${8 - row}`;
-            const isLastMove = lastMove && (lastMove.from === square || lastMove.to === square);
-
-            let pieceComponent = null;
-            if (pieceData) {
-              const pieceColor = pieceData.color;
-              const pieceType = pieceData.type;
-              const pieceName = pieceType === "p" ? "Pawn" : pieceType === "n" ? "Knight" : pieceType === "b" ? "Bishop" : pieceType === "r" ? "Rook" : pieceType === "q" ? "Queen" : "King";
-              const Piece = ChessPieces[pieceName as keyof typeof ChessPieces];
-              pieceComponent = <Piece color={pieceColor === "w" ? "light" : "dark"} size={28} />;
-            }
-
-            return (
-              <div
-                key={square}
-                className={`aspect-square flex items-center justify-center transition-all ${
-                  isLight ? "bg-[#F0E4D0]" : "bg-[#B8956A]"
-                } ${isLastMove ? (isLight ? "bg-[#f0e68c]" : "bg-[#c9a84c]") : ""}`}
-              >
-                {pieceComponent}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Board Section */}
+        <div className="lg:col-span-2">
+          {/* White Player */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
+                <ChessPieces.King color="dark" size={24} />
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Black player */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl glass flex items-center justify-center">
-            <ChessPieces.King color="light" size={20} />
+              <div>
+                <div className="font-semibold text-white text-base">{match.bot1?.name}</div>
+                <div className="text-sm text-gray-400">White • {match.bot1?.difficulty}</div>
+              </div>
+            </div>
+            <div className={`font-mono text-2xl font-bold ${game.turn() === "w" && !isComplete ? "text-yellow-400" : "text-gray-500"}`}>
+              {Math.floor(whiteTime / 60)}:{(whiteTime % 60).toString().padStart(2, "0")}
+            </div>
           </div>
-          <div>
-            <div className="font-semibold text-white text-sm">{match.bot2?.name}</div>
-            <div className="text-xs text-gray-400">Black • {match.bot2?.difficulty}</div>
+
+          {/* Chess Board */}
+          <div className="flex justify-center mb-4">
+            <div className="w-full max-w-lg aspect-square grid grid-cols-8 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10">
+              {Array.from({ length: 64 }, (_, i) => {
+                const row = Math.floor(i / 8);
+                const col = i % 8;
+                const isLight = (row + col) % 2 === 0;
+                const pieceData = board[row][col];
+                const lastMove = game.history({ verbose: true }).slice(-1)[0];
+                const square = `${"abcdefgh"[col]}${8 - row}`;
+                const isLastMove = lastMove && (lastMove.from === square || lastMove.to === square);
+
+                let pieceComponent = null;
+                if (pieceData) {
+                  const pieceColor = pieceData.color;
+                  const pieceType = pieceData.type;
+                  const pieceName = pieceType === "p" ? "Pawn" : pieceType === "n" ? "Knight" : pieceType === "b" ? "Bishop" : pieceType === "r" ? "Rook" : pieceType === "q" ? "Queen" : "King";
+                  const Piece = ChessPieces[pieceName as keyof typeof ChessPieces];
+                  pieceComponent = <Piece color={pieceColor === "w" ? "light" : "dark"} size={32} />;
+                }
+
+                return (
+                  <div
+                    key={square}
+                    className={`aspect-square flex items-center justify-center transition-all ${
+                      isLight ? "bg-[#F0E4D0]" : "bg-[#B8956A]"
+                    } ${isLastMove ? (isLight ? "bg-[#f0e68c]" : "bg-[#c9a84c]") : ""}`}
+                  >
+                    {pieceComponent}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Black Player */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
+                <ChessPieces.King color="light" size={24} />
+              </div>
+              <div>
+                <div className="font-semibold text-white text-base">{match.bot2?.name}</div>
+                <div className="text-sm text-gray-400">Black • {match.bot2?.difficulty}</div>
+              </div>
+            </div>
+            <div className={`font-mono text-2xl font-bold ${game.turn() === "b" && !isComplete ? "text-yellow-400" : "text-gray-500"}`}>
+              {Math.floor(blackTime / 60)}:{(blackTime % 60).toString().padStart(2, "0")}
+            </div>
           </div>
         </div>
-        <div className={`font-mono text-lg font-bold ${game.turn() === "b" && !isComplete ? "text-yellow-400" : "text-gray-500"}`}>
-          {Math.floor(blackTime / 60)}:{(blackTime % 60).toString().padStart(2, "0")}
+
+        {/* Side Panel */}
+        <div className="space-y-4">
+          {/* Commentary */}
+          <div className="glass rounded-2xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon path={iconPaths.sparkle} size={16} className="text-yellow-400" />
+              <span className="text-sm font-semibold text-white">AI Commentary</span>
+            </div>
+            <p className="text-sm text-gray-300 leading-relaxed">{commentary}</p>
+          </div>
+
+          {/* Match Stats */}
+          <div className="glass rounded-2xl p-4">
+            <h4 className="text-sm font-semibold text-white mb-3">Match Stats</h4>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">Moves</span>
+                <span className="font-medium text-white">{moveCount}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">Status</span>
+                <span className={`font-medium ${isComplete ? "text-green-400" : "text-yellow-400"}`}>
+                  {isComplete ? "Complete" : "Playing"}
+                </span>
+              </div>
+              {game.isCheck() && (
+                <div className="px-3 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-sm text-red-400 font-medium">
+                  Check!
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Move History */}
+          <div className="glass rounded-2xl p-4">
+            <h4 className="text-sm font-semibold text-white mb-3">Moves</h4>
+            <div className="max-h-32 overflow-y-auto">
+              {game.history().length === 0 ? (
+                <p className="text-xs text-gray-500">Starting...</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-1 text-xs">
+                  {game.history().map((move, i) => (
+                    <div key={i} className={`px-2 py-1 rounded ${i % 2 === 0 ? "text-gray-200" : "text-gray-400"}`}>
+                      {Math.floor(i / 2) + 1}{i % 2 === 0 ? "." : "..."} {move}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {isComplete && (
+            <div className="text-center py-3">
+              <div className="text-lg font-bold text-yellow-400 mb-1">Match Complete!</div>
+              <div className="text-sm text-gray-400">Updating bracket...</div>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Commentary */}
-      <div className="glass rounded-xl p-3">
-        <div className="flex items-center gap-2 mb-1">
-          <Icon path={iconPaths.sparkle} size={14} className="text-yellow-400" />
-          <span className="text-xs font-semibold text-white">AI Commentary</span>
-        </div>
-        <p className="text-xs text-gray-300">{commentary}</p>
-      </div>
-
-      {isComplete && (
-        <div className="mt-4 text-center">
-          <span className="text-sm font-semibold text-yellow-400">Match Complete!</span>
-        </div>
-      )}
     </div>
   );
 }
@@ -300,40 +362,52 @@ export default function TournamentPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="luxury-heading text-4xl text-white mb-1">Tournaments</h1>
-            <p className="text-gray-400 text-sm">Manage automated chess tournaments</p>
+            <h1 className="luxury-heading text-5xl text-white mb-1">Tournaments</h1>
+            <p className="text-gray-400 text-base">Manage and watch automated chess tournaments</p>
           </div>
-          <button onClick={() => setShowCreateModal(true)} className="px-5 py-3 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2">
-            <Icon path={iconPaths.trophy} size={18} />
+          <button onClick={() => setShowCreateModal(true)} className="px-6 py-3 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold text-base shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2">
+            <Icon path={iconPaths.trophy} size={20} />
             Create Tournament
           </button>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="glass-strong rounded-2xl p-4 text-center shadow-xl">
-            <div className="font-display text-2xl font-bold text-yellow-400">{stats.totalTournaments}</div>
-            <div className="text-xs text-gray-400">Tournaments</div>
+          <div className="glass-strong rounded-2xl p-5 text-center shadow-xl">
+            <div className="font-display text-3xl font-bold text-yellow-400">{stats.totalTournaments}</div>
+            <div className="text-sm text-gray-400">Tournaments</div>
           </div>
-          <div className="glass-strong rounded-2xl p-4 text-center shadow-xl">
-            <div className="font-display text-2xl font-bold text-yellow-400">{stats.completedTournaments}</div>
-            <div className="text-xs text-gray-400">Completed</div>
+          <div className="glass-strong rounded-2xl p-5 text-center shadow-xl">
+            <div className="font-display text-3xl font-bold text-yellow-400">{stats.completedTournaments}</div>
+            <div className="text-sm text-gray-400">Completed</div>
           </div>
-          <div className="glass-strong rounded-2xl p-4 text-center shadow-xl">
-            <div className="font-display text-2xl font-bold text-yellow-400">{stats.totalMatches}</div>
-            <div className="text-xs text-gray-400">Total Matches</div>
+          <div className="glass-strong rounded-2xl p-5 text-center shadow-xl">
+            <div className="font-display text-3xl font-bold text-yellow-400">{stats.totalMatches}</div>
+            <div className="text-sm text-gray-400">Total Matches</div>
           </div>
         </div>
 
-        {/* Live Match Viewer */}
+        {/* LIVE TOURNAMENT MATCH VIEWER - PROMINENT SECTION */}
         <AnimatePresence>
           {currentMatch && (
             <motion.div 
-              initial={{ opacity: 0, y: 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              exit={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, scale: 0.95 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              exit={{ opacity: 0, scale: 0.95 }}
               className="mb-8"
             >
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold text-white mb-1 flex items-center gap-3">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-red-500/20 border border-red-500/30 rounded-lg">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-sm font-bold text-red-400">LIVE NOW</span>
+                  </div>
+                  Watch Tournament Match
+                </h2>
+                <p className="text-gray-400">
+                  {currentMatch.bot1?.name} vs {currentMatch.bot2?.name} • Round {currentMatch.round} • Match {currentMatch.matchNumber}
+                </p>
+              </div>
               <TournamentMatchViewer match={currentMatch} onComplete={handleMatchComplete} />
             </motion.div>
           )}
@@ -344,8 +418,8 @@ export default function TournamentPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-strong rounded-3xl p-6 mb-8 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="font-display text-2xl font-semibold text-white">{selectedTournament.name}</h2>
-                <p className="text-sm text-gray-400">
+                <h2 className="font-display text-3xl font-semibold text-white">{selectedTournament.name}</h2>
+                <p className="text-base text-gray-400 mt-1">
                   {selectedTournament.bots.length} bots • Round {selectedTournament.currentRound} •{" "}
                   <span className={`font-medium ${
                     selectedTournament.status === 'completed' ? 'text-green-400' :
@@ -356,19 +430,19 @@ export default function TournamentPage() {
                   </span>
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 {selectedTournament.status === 'registration' && (
-                  <button onClick={() => handleStartTournament(selectedTournament)} className="px-4 py-2 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl text-sm font-semibold shadow-lg">
+                  <button onClick={() => handleStartTournament(selectedTournament)} className="px-5 py-2.5 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl text-base font-semibold shadow-lg">
                     Start Tournament
                   </button>
                 )}
                 {selectedTournament.status === 'in_progress' && (
-                  <button onClick={() => handlePlayNextMatch(selectedTournament)} className="px-4 py-2 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl text-sm font-semibold shadow-lg inline-flex items-center gap-2">
-                    <Icon path={iconPaths.play} size={16} />
+                  <button onClick={() => handlePlayNextMatch(selectedTournament)} className="px-5 py-2.5 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl text-base font-semibold shadow-lg inline-flex items-center gap-2">
+                    <Icon path={iconPaths.play} size={18} />
                     Play Next Match
                   </button>
                 )}
-                <button onClick={() => setSelectedTournament(null)} className="px-4 py-2 glass rounded-xl text-sm font-medium text-white hover:bg-white/10 transition-all">
+                <button onClick={() => setSelectedTournament(null)} className="px-5 py-2.5 glass rounded-xl text-base font-medium text-white hover:bg-white/10 transition-all">
                   Close
                 </button>
               </div>
@@ -378,15 +452,15 @@ export default function TournamentPage() {
             <div className="space-y-6">
               {selectedTournament.rounds.map((round, ri) => (
                 <div key={ri}>
-                  <h3 className="text-sm font-semibold text-white mb-3">Round {ri + 1}</h3>
+                  <h3 className="text-base font-semibold text-white mb-3">Round {ri + 1}</h3>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {round.map(match => (
-                      <div key={match.id} className={`p-3 rounded-xl border ${
+                      <div key={match.id} className={`p-4 rounded-xl border ${
                         match.status === 'completed' ? 'bg-green-500/10 border-green-500/30' :
                         match.status === 'playing' ? 'bg-yellow-500/10 border-yellow-500/30' :
                         'glass border-white/10'
                       }`}>
-                        <div className="flex items-center justify-between text-xs mb-2">
+                        <div className="flex items-center justify-between text-sm mb-2">
                           <span className="text-gray-400">Match {match.matchNumber}</span>
                           <span className={`font-medium ${
                             match.status === 'completed' ? 'text-green-400' :
@@ -397,17 +471,18 @@ export default function TournamentPage() {
                           </span>
                         </div>
                         <div className="space-y-1">
-                          <div className={`text-sm font-medium ${match.winner?.id === match.bot1?.id ? 'text-green-400' : 'text-white'}`}>
-                            {match.bot1?.name || 'TBD'} {match.bot1 && `(${match.bot1.difficulty})`}
+                          <div className={`text-base font-medium ${match.winner?.id === match.bot1?.id ? 'text-green-400' : 'text-white'}`}>
+                            {match.bot1?.name || 'TBD'} <span className="text-sm text-gray-500">({match.bot1?.difficulty})</span>
                           </div>
-                          <div className="text-xs text-gray-500">vs</div>
-                          <div className={`text-sm font-medium ${match.winner?.id === match.bot2?.id ? 'text-green-400' : 'text-white'}`}>
-                            {match.bot2?.name || 'TBD'} {match.bot2 && `(${match.bot2.difficulty})`}
+                          <div className="text-sm text-gray-500">vs</div>
+                          <div className={`text-base font-medium ${match.winner?.id === match.bot2?.id ? 'text-green-400' : 'text-white'}`}>
+                            {match.bot2?.name || 'TBD'} <span className="text-sm text-gray-500">({match.bot2?.difficulty})</span>
                           </div>
                         </div>
                         {match.winner && (
-                          <div className="mt-2 text-xs text-green-400 font-medium">
-                            🏆 Winner: {match.winner.name}
+                          <div className="mt-3 text-sm text-green-400 font-medium flex items-center gap-1">
+                            <Icon path={iconPaths.trophy} size={14} />
+                            Winner: {match.winner.name}
                           </div>
                         )}
                       </div>
@@ -418,10 +493,10 @@ export default function TournamentPage() {
             </div>
 
             {selectedTournament.winner && (
-              <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/30 text-center">
-                <div className="text-3xl mb-2">🏆</div>
-                <div className="font-display text-xl font-semibold text-white">Tournament Champion</div>
-                <div className="text-yellow-400 font-bold text-lg">{selectedTournament.winner.name}</div>
+              <div className="mt-6 p-6 rounded-2xl bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/30 text-center">
+                <Icon path={iconPaths.trophy} size={40} className="text-yellow-400 mx-auto mb-3" />
+                <div className="font-display text-2xl font-semibold text-white mb-1">Tournament Champion</div>
+                <div className="text-yellow-400 font-bold text-xl">{selectedTournament.winner.name}</div>
               </div>
             )}
           </motion.div>
@@ -440,22 +515,22 @@ export default function TournamentPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl glass flex items-center justify-center">
-                    <Icon path={iconPaths.trophy} size={22} className="text-yellow-400" />
+                    <Icon path={iconPaths.trophy} size={24} className="text-yellow-400" />
                   </div>
                   <div>
-                    <div className="font-semibold text-white">{tournament.name}</div>
-                    <div className="text-xs text-gray-400">{tournament.bots.length} bots</div>
+                    <div className="font-semibold text-white text-base">{tournament.name}</div>
+                    <div className="text-sm text-gray-400">{tournament.bots.length} bots</div>
                   </div>
                 </div>
                 <button 
                   onClick={() => handleDeleteTournament(tournament.id)}
                   className="p-2 glass rounded-lg hover:bg-red-500/20 transition-all"
                 >
-                  <Icon path={iconPaths.trash} size={16} className="text-gray-400 hover:text-red-400" />
+                  <Icon path={iconPaths.trash} size={18} className="text-gray-400 hover:text-red-400" />
                 </button>
               </div>
               <div className="flex items-center justify-between mb-4">
-                <span className={`text-xs font-medium px-2 py-1 rounded-lg ${
+                <span className={`text-sm font-medium px-3 py-1 rounded-lg ${
                   tournament.status === 'completed' ? 'bg-green-500/20 text-green-400' :
                   tournament.status === 'in_progress' ? 'bg-yellow-500/20 text-yellow-400' :
                   'glass text-gray-300'
@@ -464,12 +539,15 @@ export default function TournamentPage() {
                    tournament.status === 'in_progress' ? 'In Progress' : 'Registration'}
                 </span>
                 {tournament.winner && (
-                  <span className="text-xs text-yellow-400 font-medium">🏆 {tournament.winner.name}</span>
+                  <span className="text-sm text-yellow-400 font-medium flex items-center gap-1">
+                    <Icon path={iconPaths.trophy} size={14} />
+                    {tournament.winner.name}
+                  </span>
                 )}
               </div>
               <button 
                 onClick={() => setSelectedTournament(tournament)}
-                className="w-full py-2 glass rounded-xl text-sm font-medium text-white hover:bg-white/10 transition-all"
+                className="w-full py-2.5 glass rounded-xl text-base font-medium text-white hover:bg-white/10 transition-all"
               >
                 View Details
               </button>
@@ -479,10 +557,12 @@ export default function TournamentPage() {
 
         {tournaments.length === 0 && (
           <div className="text-center py-16">
-            <div className="text-5xl mb-4">🏆</div>
-            <h3 className="font-display text-2xl text-white mb-2">No Tournaments Yet</h3>
-            <p className="text-gray-400 mb-6">Create your first tournament to get started</p>
-            <button onClick={() => setShowCreateModal(true)} className="px-6 py-3 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold shadow-lg">
+            <div className="w-20 h-20 rounded-2xl glass-strong mx-auto mb-6 flex items-center justify-center">
+              <Icon path={iconPaths.trophy} size={40} className="text-yellow-400" />
+            </div>
+            <h3 className="font-display text-3xl text-white mb-3">No Tournaments Yet</h3>
+            <p className="text-gray-400 text-base mb-8">Create your first tournament to get started</p>
+            <button onClick={() => setShowCreateModal(true)} className="px-8 py-4 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold text-base shadow-lg">
               Create Tournament
             </button>
           </div>
@@ -538,7 +618,6 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
   ];
 
   const uploadedBots = getUploadedBots();
-  const allBots = [...uploadedBots, ...defaultBots];
 
   const toggleBot = (bot: TournamentBot) => {
     if (selectedBots.find(b => b.id === bot.id)) {
@@ -567,27 +646,27 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
         
         <div className="space-y-4 mb-6">
           <div>
-            <label className="text-sm font-medium text-gray-300 mb-2 block">Tournament Name</label>
+            <label className="text-base font-medium text-gray-300 mb-2 block">Tournament Name</label>
             <input 
               type="text" 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               placeholder="Grand Prix 2024" 
-              className="w-full px-4 py-3 glass rounded-xl text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-yellow-500/50" 
+              className="w-full px-4 py-3 glass rounded-xl text-white text-base placeholder-gray-500 outline-none focus:ring-2 focus:ring-yellow-500/50" 
             />
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-300 mb-2 block">
+            <label className="text-base font-medium text-gray-300 mb-2 block">
               Select Bots ({selectedBots.length})
               {uploadedBots.length > 0 && (
-                <span className="ml-2 text-xs text-yellow-400">({uploadedBots.length} uploaded)</span>
+                <span className="ml-2 text-sm text-yellow-400">({uploadedBots.length} uploaded)</span>
               )}
             </label>
             
             {uploadedBots.length > 0 && (
-              <div className="mb-3">
-                <div className="text-xs text-gray-400 mb-2">Your Uploaded Bots</div>
+              <div className="mb-4">
+                <div className="text-sm text-gray-400 mb-2 font-medium">Your Uploaded Bots</div>
                 <div className="grid grid-cols-2 gap-2">
                   {uploadedBots.map(bot => (
                     <button
@@ -600,10 +679,10 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <ChessPieces.Knight color="dark" size={16} />
+                        <ChessPieces.Knight color="dark" size={18} />
                         <div>
-                          <div className="text-xs font-semibold text-white">{bot.name}</div>
-                          <div className="text-[10px] text-gray-400 capitalize">{bot.difficulty}</div>
+                          <div className="text-sm font-semibold text-white">{bot.name}</div>
+                          <div className="text-xs text-gray-400 capitalize">{bot.difficulty}</div>
                         </div>
                       </div>
                     </button>
@@ -612,7 +691,7 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
               </div>
             )}
 
-            <div className="text-xs text-gray-400 mb-2">Default Bots</div>
+            <div className="text-sm text-gray-400 mb-2 font-medium">Default Bots</div>
             <div className="grid grid-cols-2 gap-2">
               {defaultBots.map(bot => (
                 <button
@@ -625,10 +704,10 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <ChessPieces.Knight color="dark" size={16} />
+                    <ChessPieces.Knight color="dark" size={18} />
                     <div>
-                      <div className="text-xs font-semibold text-white">{bot.name}</div>
-                      <div className="text-[10px] text-gray-400 capitalize">{bot.difficulty}</div>
+                      <div className="text-sm font-semibold text-white">{bot.name}</div>
+                      <div className="text-xs text-gray-400 capitalize">{bot.difficulty}</div>
                     </div>
                   </div>
                 </button>
@@ -638,8 +717,8 @@ function CreateTournamentModal({ onClose, onCreate }: { onClose: () => void; onC
         </div>
 
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 py-3 glass rounded-xl font-medium text-white hover:bg-white/10 transition-all">Cancel</button>
-          <button onClick={handleCreate} className="flex-1 py-3 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold shadow-lg">Create</button>
+          <button onClick={onClose} className="flex-1 py-3 glass rounded-xl font-medium text-white text-base hover:bg-white/10 transition-all">Cancel</button>
+          <button onClick={handleCreate} className="flex-1 py-3 bg-gradient-to-br from-yellow-500 to-yellow-600 text-black rounded-xl font-semibold text-base shadow-lg">Create</button>
         </div>
       </motion.div>
     </motion.div>
