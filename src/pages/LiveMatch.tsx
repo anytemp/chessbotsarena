@@ -42,6 +42,32 @@ function getRandomMatchup() {
   };
 }
 
+// Calculate material advantage
+function calculateMaterial(game: any) {
+  const pieceValues: Record<string, number> = {
+    p: 1, n: 3, b: 3, r: 5, q: 9, k: 0
+  };
+  
+  let white = 0;
+  let black = 0;
+  
+  const board = game.board();
+  for (const row of board) {
+    for (const square of row) {
+      if (square) {
+        const value = pieceValues[square.type] || 0;
+        if (square.color === 'w') {
+          white += value;
+        } else {
+          black += value;
+        }
+      }
+    }
+  }
+  
+  return { white, black };
+}
+
 export default function LiveMatch() {
   const navigate = useNavigate();
   const [game, setGame] = useState(createChessGame());
@@ -91,15 +117,33 @@ export default function LiveMatch() {
 
       if (currentGame.isGameOver()) {
         setMatchStatus("completed");
+        let result: "white" | "black" | "draw" = "draw";
+        
         if (currentGame.isCheckmate()) {
           const winner = currentGame.turn() === "w" ? matchup.bot2.name : matchup.bot1.name;
+          result = currentGame.turn() === "w" ? "black" : "white";
           setMatchResult(`${winner} wins by checkmate!`);
-        } else {
+        } else if (currentGame.isDraw()) {
+          result = "draw";
           setMatchResult("Match ended in a draw!");
+        } else {
+          // Game ended by other means (timeout, max moves, etc.)
+          // Determine winner by material count
+          const material = calculateMaterial(currentGame);
+          if (material.white > material.black) {
+            result = "white";
+            setMatchResult(`${matchup.bot1.name} wins on material!`);
+          } else if (material.black > material.white) {
+            result = "black";
+            setMatchResult(`${matchup.bot2.name} wins on material!`);
+          } else {
+            result = "draw";
+            setMatchResult("Match ended in a draw!");
+          }
         }
         setShowGameOver(true);
         const duration = Math.floor((Date.now() - startTime) / 1000);
-        saveCompletedGame(matchup.bot1.name, matchup.bot2.name, currentGame.isCheckmate() ? (currentGame.turn() === "w" ? "black" : "white") : "draw", gameState.moveHistory, duration);
+        saveCompletedGame(matchup.bot1.name, matchup.bot2.name, result, gameState.moveHistory, duration);
         toast.success("Match completed! Saved to history.");
         return;
       }

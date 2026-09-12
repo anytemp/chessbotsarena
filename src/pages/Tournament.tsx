@@ -33,6 +33,32 @@ const iconPaths = {
   eye: "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z",
 };
 
+// Calculate material advantage
+function calculateMaterial(game: any) {
+  const pieceValues: Record<string, number> = {
+    p: 1, n: 3, b: 3, r: 5, q: 9, k: 0
+  };
+  
+  let white = 0;
+  let black = 0;
+  
+  const board = game.board();
+  for (const row of board) {
+    for (const square of row) {
+      if (square) {
+        const value = pieceValues[square.type] || 0;
+        if (square.color === 'w') {
+          white += value;
+        } else {
+          black += value;
+        }
+      }
+    }
+  }
+  
+  return { white, black };
+}
+
 // Live Tournament Match Viewer Component
 function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; onComplete: (result: TournamentMatch) => void }) {
   const [game, setGame] = useState(new Chess());
@@ -73,10 +99,27 @@ function TournamentMatchViewer({ match, onComplete }: { match: TournamentMatch; 
           winner = currentGame.turn() === "w" ? match.bot2! : match.bot1!;
           result = currentGame.turn() === "w" ? "black" : "white";
           setCommentary(`Checkmate! ${winner.name} wins!`);
-        } else {
+        } else if (currentGame.isDraw()) {
           winner = Math.random() > 0.5 ? match.bot1! : match.bot2!;
           result = "draw";
           setCommentary(`Game drawn. ${winner.name} advances.`);
+        } else {
+          // Game ended by other means (max moves, etc.)
+          // Determine winner by material count
+          const material = calculateMaterial(currentGame);
+          if (material.white > material.black) {
+            winner = match.bot1!;
+            result = "white";
+            setCommentary(`${winner.name} wins on material advantage!`);
+          } else if (material.black > material.white) {
+            winner = match.bot2!;
+            result = "black";
+            setCommentary(`${winner.name} wins on material advantage!`);
+          } else {
+            winner = Math.random() > 0.5 ? match.bot1! : match.bot2!;
+            result = "draw";
+            setCommentary(`Game drawn. ${winner.name} advances.`);
+          }
         }
 
         const completedMatch: TournamentMatch = {
